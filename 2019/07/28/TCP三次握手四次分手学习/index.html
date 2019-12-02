@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="计算机网络,TCP," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="最近在看计算机网络的书，结合的是B站的韩立刚老师的视频，韩老师讲的非常详细，结合实例讲解，让我想起了考研的时候看的吉林大学谭庆昌老师的视频。结论：老师之间的教学水平真的是有差距的。。。话不多说，看一波面试必考的TCP协议的三握四挥。">
+<meta name="keywords" content="计算机网络,TCP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP三次握手四次分手学习">
+<meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;07&#x2F;28&#x2F;TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0&#x2F;index.html">
+<meta property="og:site_name" content="Hava a nice day">
+<meta property="og:description" content="最近在看计算机网络的书，结合的是B站的韩立刚老师的视频，韩老师讲的非常详细，结合实例讲解，让我想起了考研的时候看的吉林大学谭庆昌老师的视频。结论：老师之间的教学水平真的是有差距的。。。话不多说，看一波面试必考的TCP协议的三握四挥。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721144670.png">
+<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564743074472.png">
+<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721635315.png">
+<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564746197678.png">
+<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564746212446.png">
+<meta property="og:updated_time" content="2019-08-02T11:45:43.728Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721144670.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://liangjiacheng.cn/2019/07/28/TCP三次握手四次分手学习/"/>
+
+
+
+
+
+  <title>TCP三次握手四次分手学习 | Hava a nice day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hava a nice day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2019/07/28/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AppleLiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hava a nice day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">TCP三次握手四次分手学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-28T09:55:41+08:00">
+                2019-07-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近在看计算机网络的书，结合的是B站的韩立刚老师的视频，韩老师讲的非常详细，结合实例讲解，让我想起了考研的时候看的吉林大学谭庆昌老师的视频。结论：老师之间的教学水平真的是有差距的。。。话不多说，看一波面试必考的TCP协议的三握四挥。</p>
+<a id="more"></a>
+
+<h2 id="TCP报文首部"><a href="#TCP报文首部" class="headerlink" title="TCP报文首部"></a>TCP报文首部</h2><p>要理解TCP的三握四挥，需要首先掌握TCP的报文首部。</p>
+
+
+<p>首先要注意上面的32位的长度，一行是32个二进制位，也就是4个字节。首部固定的五行一共20字节，可变长度最多40字节（后面会说为什么是40）。所以TCP首部最多就是20+40=60个字节。</p>
+<ol>
+<li>源端口（16位）和目标端口（16位），各四个字节，因为端口是从0（00000000）到65535（11111111），所以需要四个字节来存储。</li>
+<li>序号（32位），这个说明的是，我从A端发一个包到B端，我的TCP的数据部分的<strong>第一个字节</strong>在我整个要发的数据包（因为一次发送的长度有限，是分多个包发送的）中的<strong>第几个位置</strong>。</li>
+<li>确认号（32位）。这个说明的是，假设A端口发了一个包（假设是第一次发，发的是1到200个字节）到B端，B端收到后给一个回信，这个时候回信的确认号就是201，表示<strong>期望</strong>下一次A给B发的包，序号是<strong>201</strong>开始的。</li>
+<li>数据偏移（4位），还记得上面提到的可变长度的长最多是40字节吗？数据偏移表示的是指出 <strong>TCP 报文段的数据起始处距离 TCP 报文段的起始处有多远</strong>（也就是首部的<strong>长度</strong>是多少）。他占四个位，因为TCP协议是32位的，<strong>数据偏移是有单位的！！！</strong>，单位是32位（四个字节），所以4位最多表示（15*4=60），所以最多是60。</li>
+<li>保留字段（6位），占 6 位，保留为今后使用，但目前应置为 0。</li>
+<li>下面是6个标志位，占6位。第一个URG（urgent（紧急的）），这个位如果置1，则表示他所携带的TCP数据段可以直接插队，因为在A端（发送端）是有一个发送缓冲区的，数据再缓冲区被TCP首部一个一个的封装起来，然后排队发送，如果URG被标志为1，那么他就可以直接插队发送。</li>
+<li>ACK（acknowledgment），确认位，为1的时候表示TCP首部中的确认号是有用的，为0表示，确认号无效。常用在TCP三次握手的时候，发送建立连接请求的时候。</li>
+<li>PSH，推送比特。在B端（接收端）中也是有接受缓冲区的，发过来的数据包被拆掉首部之后也在排队，如果PSH置为1表示直接插队到最前面处理。</li>
+<li>RST（reset），复位比特。当RST为1时表示，TCP连接出现严重错误，必须释放连接，然后重新建立连接。比方说我们在访问一个网站，还没加载完，我们直接关了网页，就会发送一个RST=1的报文段给接收端。</li>
+<li>SYN（synchronize）同步比特。置为1表示这是一个连接请求，或者连接接受报文，三次握手使用。</li>
+<li>FIN：终止比特，1bit，用来释放一个连接。当FIN=1 时，表明此报文段的发送端的数据已发送完毕，并要求释放运输连接。</li>
+<li>窗口大小，16位。表示当前这个端口一次性最多能接受多大的数据包，告知对方的时候发送。</li>
+<li>检验和，在TCP报文段的前面加上12字节的伪首部，然后计算出来的一个和。</li>
+<li>紧急指针，比方说刚刚的URG位置为1了，那么紧急指针就表示，紧急的数据的最后一个字节的序号是多少，当接收端收到后，就截取从头到紧急指针的这一段。</li>
+<li>选项部分：</li>
+</ol>
+<ul>
+<li>MSS最大报文段长度(Maxium Segment Size)：指明数据字段的最大长度，数据字段的长度加上TCP首部的长度才等于整个TCP报文段的长度。MSS值指示自己期望对方发送TCP报文段时那个数据字段的长度。通信双方可以有不同的MSS值。如果未填写，默认采用536字节。MSS只出现在SYN报文中。即：MSS出现在SYN=1的报文段中。</li>
+<li>SACK选择确认项(Selective Acknowledgements)：用来确保只重传缺少的报文段，而不是重传所有报文段。比如主机A发送报文段1、2、3，而主机B仅收到报文段1、3。那么此时就需要使用SACK选项来告诉发送方只发送丢失的数据。那么又如何指明丢失了哪些报文段呢？使用SACK需要两个功能字节。一个表示要使用SACK选项，另一个指明这个选项占用多少字节。描述丢失的报文段2，是通过描述它的左右边界报文段1、3来完成的。而这个1、3实际上是表示序列号，所以描述一个丢失的报文段需要64位即8个字节的空间。那么可以推算整个选项字段最多描述(40-2)/8=4个丢失的报文段。</li>
+</ul>
+<h2 id="抓包分析三次握手"><a href="#抓包分析三次握手" class="headerlink" title="抓包分析三次握手"></a>抓包分析三次握手</h2><h4 id="wireshark抓到的包与对应的协议层"><a href="#wireshark抓到的包与对应的协议层" class="headerlink" title="wireshark抓到的包与对应的协议层"></a>wireshark抓到的包与对应的协议层</h4>
+
+<ol>
+<li><p>Frame:   物理层的数据帧概况</p>
+</li>
+<li><p>Ethernet II: 数据链路层以太网帧头部信息（网卡的MAC地址）</p>
+</li>
+<li><p>Internet Protocol Version 4: 互联网层IP包头部信息</p>
+</li>
+<li><p>Transmission Control Protocol:  传输层的数据段头部信息，此处是TCP</p>
+</li>
+<li><p>Hypertext Transfer Protocol:  应用层的信息，此处是HTTP协议</p>
+</li>
+</ol>
+<h4 id="TCP包中的字段"><a href="#TCP包中的字段" class="headerlink" title="TCP包中的字段"></a>TCP包中的字段</h4>
+
+<h4 id="TCP三次握手抓包分析"><a href="#TCP三次握手抓包分析" class="headerlink" title="TCP三次握手抓包分析"></a>TCP三次握手抓包分析</h4>
+
+<p>从第四次开始才是http请求。</p>
+
+
+<h4 id="第一次握手"><a href="#第一次握手" class="headerlink" title="第一次握手"></a>第一次握手</h4><p>客户端向服务端发送请求连接包，SYN为1，ACK为0，序号为0。WIN = 8192 来自Window size: 8192 。MSS = 1460 来自 Maximum segment size: 1460 byte （<strong>最大能接受的数据包</strong>）。最长报文段（<strong>最大能发送的数据包长度</strong>），TCP包所能携带的最大数据量，不包含TCP头和Option。一般为MTU值减去IPv4头部(至少20字节)和TCP头部(至少20字节)得到 </p>
+
+
+<h4 id="第二次握手"><a href="#第二次握手" class="headerlink" title="第二次握手"></a>第二次握手</h4><p>接受端接受到发送端发送的报文，SYN是1表示发送端要求建立连接，于是给他回了一个SYN置1，ACK也置1。因为刚刚发过来的序号是0，所以确认号为0+1=1，序号因为之前没发过数据，所以是0。</p>
+
+
+<h4 id="第三次握手"><a href="#第三次握手" class="headerlink" title="第三次握手"></a>第三次握手</h4><p>发送端接受到接收端发来的回执之后，也要发送一个回执，SYN为0，ACK为1表示收到了，序号因为刚开始发的是0，对方回执确认号是1，所以这次要发1，然后回执中的序号是0，所以这次的确认号要是1（表示期望下次对方发来的数据包的序号是1）。</p>
+
+
+<h2 id="抓包分析TCP的四次挥手"><a href="#抓包分析TCP的四次挥手" class="headerlink" title="抓包分析TCP的四次挥手"></a>抓包分析TCP的四次挥手</h2>
+
+<h4 id="第一次挥手"><a href="#第一次挥手" class="headerlink" title="第一次挥手"></a>第一次挥手</h4><p>客户端给服务器发送TCP包，用来关闭客户端到服务器的数据传送。将标志位FIN（表示客户端已经没有数据要发了）和ACK置为1，序号为X=1，确认序号为Z=1。</p>
+
+
+<h4 id="第二次挥手"><a href="#第二次挥手" class="headerlink" title="第二次挥手"></a>第二次挥手</h4><p>服务器收到FIN后，发回一个ACK(标志位ACK=1),确认序号为收到的序号加1，即X=X+1=2。序号为收到的确认序号=Z。</p>
+
+
+<h4 id="第三次挥手"><a href="#第三次挥手" class="headerlink" title="第三次挥手"></a>第三次挥手</h4><p>服务器关闭与客户端的连接，发送一个FIN。标志位FIN和ACK置为1，序号为Y=1，确认序号为X=2。</p>
+
+
+<h4 id="第四次挥手"><a href="#第四次挥手" class="headerlink" title="第四次挥手"></a>第四次挥手</h4><p>客户端收到服务器发送的FIN之后，发回ACK确认(标志位ACK=1),确认序号为收到的序号加1，即Y+1=2。序号为收到的确认序号X=2。</p>
+
+
+<h2 id="为什么是三次握手"><a href="#为什么是三次握手" class="headerlink" title="为什么是三次握手"></a>为什么是三次握手</h2><h4 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h4><ol>
+<li>A发送同步信号SYN+序号给B</li>
+<li>B接收到A发送的数据包，给A回一个SYN+ACK+B的序号</li>
+<li>A收到B的数据包，给B回一个ACK+新的序号</li>
+</ol>
+<h4 id="两次握手"><a href="#两次握手" class="headerlink" title="两次握手"></a>两次握手</h4><ol>
+<li>A发送SYN+序号给B</li>
+<li>B收到后回一个SYN+ACK+序号给A</li>
+</ol>
+<p>两次握手的不足，就是A是否能接受到B的回执？就像打电话的时候，我说喂？，对方说嗯？，这时候如果我听到了对方的嗯，我才会开始讲事情，这个时候就像三次握手一样。如果两次握手就建立连接，那么如果第二段我没有收到，我就不能确认对方的发送能力是否正常，TCP是双向连接的。<strong>第一次握手是确认我方的发送能力正常，第二句是说明对方的接受能力和发送能力正常，第三次握手是确认我方的接受能力正常。</strong></p>
+<h4 id="ISN是固定的吗？"><a href="#ISN是固定的吗？" class="headerlink" title="ISN是固定的吗？"></a>ISN是固定的吗？</h4><p>三次握手的一个重要功能是客户端和服务端交换 ISN(Initial Sequence Number)，以便让对方知道接下来接收数据的时候如何按序列号组装数据。</p>
+<p>如果 ISN 是固定的，攻击者很容易猜出后续的确认号，因此 ISN 是动态生成的。</p>
+<h4 id="三次握手过程中可以携带数据吗"><a href="#三次握手过程中可以携带数据吗" class="headerlink" title="三次握手过程中可以携带数据吗"></a><strong>三次握手过程中可以携带数据吗</strong></h4><p>很多人可能会认为三次握手都不能携带数据，其实第三次握手的时候，是可以携带数据的。</p>
+<p>也就是说，第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。</p>
+<h2 id="为什么是四次挥手"><a href="#为什么是四次挥手" class="headerlink" title="为什么是四次挥手"></a>为什么是四次挥手</h2><p>再来回顾一下四次挥手的过程</p>
+<ol>
+<li>客户端发送一个FIN报文，这是客户端处于FIN_WAIT1状态</li>
+<li>服务端接收到FIN报文后，给客户端回一个ACK报文。这是服务端处于CLOSE_WAIT状态</li>
+<li>如果服务端也想断开连接，那么他给客户端也发一个FIN报文，这时服务端处于LAST_ACK状态</li>
+<li>客户端收到FIN报文后，再发送一个ACK报文给服务端，这时客户端处于<strong>TIME_WAIT状态</strong>，需要等待一个RTT时间后才会进入CLOSED状态。而服务端收到ACK报文后就进入CLOSED状态了。</li>
+</ol>
+<p>这里为什么客户端要等待一个RTT时间后才进入CLOSED状态呢？要确保服务器是否已经收到了我们的 ACK 报文，如果没有收到的话，<strong>服务器会重新发 FIN 报文给客户端</strong>，所以这时候客户端收到之后，就知道之前的ACK报文丢了，会再发一次。</p>
+<h2 id="TCP的流量控制"><a href="#TCP的流量控制" class="headerlink" title="TCP的流量控制"></a>TCP的流量控制</h2><h4 id="利用滑动窗口实现流量控制"><a href="#利用滑动窗口实现流量控制" class="headerlink" title="利用滑动窗口实现流量控制"></a>利用滑动窗口实现流量控制</h4><p>如果发送方把数据发送得过快，接收方可能会来不及接收，这就会造成数据的丢失。所谓<strong>流量控制</strong>就是让发送方的发送速率不要太快，要让接收方来得及接收。</p>
+<p>如果A发送的速率过快，B就给A回信的时候设置窗口的大小减小即可。</p>
+<p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721144670.png" alt="1564721144670"></p>
+<h4 id="超时重传时间的选择"><a href="#超时重传时间的选择" class="headerlink" title="超时重传时间的选择"></a>超时重传时间的选择</h4><p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564743074472.png" alt="1564743074472"></p>
+<p>应略大于上面得出的加权平均往返时间。</p>
+<h4 id="流量控制的死锁问题"><a href="#流量控制的死锁问题" class="headerlink" title="流量控制的死锁问题"></a>流量控制的死锁问题</h4><p>考虑一种特殊的情况，就是接收方若<strong>没有缓存</strong>足够使用，就会发送<strong>零窗口大小</strong>的报文，此时发送放将发送窗口设置为0，<strong>停止发送数据</strong>。之后接收方有<strong>足够的缓存</strong>，发送了<strong>非零窗口大小</strong>的报文，但是这个报文在中途丢失的，那么发送方的发送窗口就一直为<strong>零导致死锁</strong>。</p>
+<p>解决这个问题，TCP为每一个连接设置一个持续计时器（persistence timer）。只要TCP的一方收到对方的零窗口通知<strong>，就启动该计时器，周期性的发送一个零窗口探测报文段。对方就在确认这个报文的时候给出现在的窗口大小（注意：</strong>TCP规定，即使设置为零窗口，也必须接收以下几种报文段：零窗口探测报文段、确认报文段和携带紧急数据的报文段）。</p>
+<h2 id="TCP的拥塞控制"><a href="#TCP的拥塞控制" class="headerlink" title="TCP的拥塞控制"></a>TCP的拥塞控制</h2><p>即对资源的需求超过了可用的资源。若网络中许多资源同时供应不足，网络的性能就要明显变坏，整个网络的吞吐量随之负荷的增大而下降。</p>
+<p>慢开始算法，快重传和快恢复。</p>
+<h4 id="慢开始算法"><a href="#慢开始算法" class="headerlink" title="慢开始算法"></a>慢开始算法</h4><ol>
+<li>在主机刚刚开始发送报文段时可先将拥塞窗口 cwnd 设置为一个最大报文段 MSS 的数值。</li>
+<li>在每收到一个对新的报文段的确认后，将拥塞窗口增加至多一个 MSS 的数值。</li>
+<li>用这样的方法逐步增大发送端的拥塞窗口 cwnd，可以使分组注入到网络的速率更加合理。</li>
+</ol>
+<p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721635315.png" alt="1564721635315"></p>
+<p>维护一个cwnd的值，再维护一个慢开始的门限带，ssthresh变量。当拥塞窗口大于门限带的时候，就转为线性增长。</p>
+<p>但判断网络发生拥塞（利用超时重传时间来确认，如果在超时重传时间内没有收到对方的回执，就判断网络拥塞）时，就把慢开始的门限带设置为出现拥塞时发送窗口的大小的一半，然后重新开始慢开始算法。</p>
+<h4 id="快重传和快恢复算法"><a href="#快重传和快恢复算法" class="headerlink" title="快重传和快恢复算法"></a>快重传和快恢复算法</h4><p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564746197678.png" alt="1564746197678"></p>
+<p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564746212446.png" alt="1564746212446"></p>
+<p>Ref:</p>
+<p><a href="https://my.oschina.net/u/658658/blog/417739" target="_blank" rel="noopener">https://my.oschina.net/u/658658/blog/417739</a></p>
+<p><a href="https://blog.csdn.net/wilsonpeng3/article/details/12869233" target="_blank" rel="noopener">https://blog.csdn.net/wilsonpeng3/article/details/12869233</a></p>
+<p><a href="https://blog.csdn.net/hry2015/article/details/79006671" target="_blank" rel="noopener">https://blog.csdn.net/hry2015/article/details/79006671</a></p>
+<p><a href="https://www.zhihu.com/question/24853633/answer/115173386" target="_blank" rel="noopener">https://www.zhihu.com/question/24853633/answer/115173386</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+          
+            <a href="/tags/TCP/" rel="tag"># TCP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/22/%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" rel="next" title="动态代理">
+                <i class="fa fa-chevron-left"></i> 动态代理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/29/%E5%89%91%E6%8C%87Offer%E9%A2%98%E7%9B%AE%E5%88%86%E7%B1%BB%E4%B9%8B%E5%AD%97%E7%AC%A6%E4%B8%B2/" rel="prev" title="剑指Offer题目分类之字符串">
+                剑指Offer题目分类之字符串 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpeg"
+                alt="AppleLiang" />
+            
+              <p class="site-author-name" itemprop="name">AppleLiang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/AppleLiang96" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.instagram.com/AppleLiang96" target="_blank" title="Instagram">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP报文首部"><span class="nav-number">1.</span> <span class="nav-text">TCP报文首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#抓包分析三次握手"><span class="nav-number">2.</span> <span class="nav-text">抓包分析三次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#wireshark抓到的包与对应的协议层"><span class="nav-number">2.0.1.</span> <span class="nav-text">wireshark抓到的包与对应的协议层</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP包中的字段"><span class="nav-number">2.0.2.</span> <span class="nav-text">TCP包中的字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP三次握手抓包分析"><span class="nav-number">2.0.3.</span> <span class="nav-text">TCP三次握手抓包分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第一次握手"><span class="nav-number">2.0.4.</span> <span class="nav-text">第一次握手</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二次握手"><span class="nav-number">2.0.5.</span> <span class="nav-text">第二次握手</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三次握手"><span class="nav-number">2.0.6.</span> <span class="nav-text">第三次握手</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#抓包分析TCP的四次挥手"><span class="nav-number">3.</span> <span class="nav-text">抓包分析TCP的四次挥手</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一次挥手"><span class="nav-number">3.0.1.</span> <span class="nav-text">第一次挥手</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二次挥手"><span class="nav-number">3.0.2.</span> <span class="nav-text">第二次挥手</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三次挥手"><span class="nav-number">3.0.3.</span> <span class="nav-text">第三次挥手</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第四次挥手"><span class="nav-number">3.0.4.</span> <span class="nav-text">第四次挥手</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么是三次握手"><span class="nav-number">4.</span> <span class="nav-text">为什么是三次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#三次握手"><span class="nav-number">4.0.1.</span> <span class="nav-text">三次握手</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#两次握手"><span class="nav-number">4.0.2.</span> <span class="nav-text">两次握手</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ISN是固定的吗？"><span class="nav-number">4.0.3.</span> <span class="nav-text">ISN是固定的吗？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三次握手过程中可以携带数据吗"><span class="nav-number">4.0.4.</span> <span class="nav-text">三次握手过程中可以携带数据吗</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么是四次挥手"><span class="nav-number">5.</span> <span class="nav-text">为什么是四次挥手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP的流量控制"><span class="nav-number">6.</span> <span class="nav-text">TCP的流量控制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#利用滑动窗口实现流量控制"><span class="nav-number">6.0.1.</span> <span class="nav-text">利用滑动窗口实现流量控制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#超时重传时间的选择"><span class="nav-number">6.0.2.</span> <span class="nav-text">超时重传时间的选择</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#流量控制的死锁问题"><span class="nav-number">6.0.3.</span> <span class="nav-text">流量控制的死锁问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP的拥塞控制"><span class="nav-number">7.</span> <span class="nav-text">TCP的拥塞控制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#慢开始算法"><span class="nav-number">7.0.1.</span> <span class="nav-text">慢开始算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#快重传和快恢复算法"><span class="nav-number">7.0.2.</span> <span class="nav-text">快重传和快恢复算法</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AppleLiang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

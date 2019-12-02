@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java基础," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="ConcurrentModificationException原因在对Vector，ArrayList进行迭代的时候，如果插入或者删除元素的话，就会抛出java.util.ConcurrentModificationException异常。本文就是来剖析原因以及解决办法。">
+<meta name="keywords" content="Java基础">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ConcurrentModificationException">
+<meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;09&#x2F;22&#x2F;ConcurrentModificationException%E5%8E%9F%E5%9B%A0&#x2F;index.html">
+<meta property="og:site_name" content="Hava a nice day">
+<meta property="og:description" content="ConcurrentModificationException原因在对Vector，ArrayList进行迭代的时候，如果插入或者删除元素的话，就会抛出java.util.ConcurrentModificationException异常。本文就是来剖析原因以及解决办法。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-02T07:00:09.691Z">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://liangjiacheng.cn/2019/09/22/ConcurrentModificationException原因/"/>
+
+
+
+
+
+  <title>ConcurrentModificationException | Hava a nice day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hava a nice day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2019/09/22/ConcurrentModificationException%E5%8E%9F%E5%9B%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AppleLiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hava a nice day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ConcurrentModificationException</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-22T21:40:28+08:00">
+                2019-09-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="ConcurrentModificationException原因"><a href="#ConcurrentModificationException原因" class="headerlink" title="ConcurrentModificationException原因"></a>ConcurrentModificationException原因</h2><p>在对Vector，ArrayList进行迭代的时候，如果插入或者删除元素的话，就会抛出java.util.ConcurrentModificationException异常。本文就是来剖析原因以及解决办法。</p>
+<a id="more"></a>
+
+<h3 id="ConcurrentModificationException异常出现的原因"><a href="#ConcurrentModificationException异常出现的原因" class="headerlink" title="ConcurrentModificationException异常出现的原因"></a>ConcurrentModificationException异常出现的原因</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fun1</span><span class="params">()</span></span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    ArrayList&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span></pre></td></tr><tr><td class="code"><pre><span class="line">    list.add(<span class="number">1</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    list.add(<span class="number">2</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    list.add(<span class="number">3</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    Iterator&lt;Integer&gt; iterator = list.iterator();</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">while</span> (iterator.hasNext())&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">if</span> (iterator.next()==<span class="number">2</span>)&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            list.remove(iterator.next());</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">java.util.ConcurrentModificationException</span></pre></td></tr><tr><td class="code"><pre><span class="line">	at java.util.ArrayList$Itr.checkForComodification(ArrayList.java:<span class="number">909</span>)</span></pre></td></tr><tr><td class="code"><pre><span class="line">	at java.util.ArrayList$Itr.next(ArrayList.java:<span class="number">859</span>)</span></pre></td></tr><tr><td class="code"><pre><span class="line">	at concurrent.ConcurrentModificationExceptionTest.fun1(ConcurrentModificationExceptionTest.java:<span class="number">22</span>)</span></pre></td></tr></table></figure>
+
+<p>可以看出  主要的问题就在checkForComodification方法中。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">checkForComodification</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//首先来粗略看一下这个方法，主要是比较了现在的modcount和期望的数一样么，不一样就抛出异常</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">if</span> (modCount != expectedModCount)</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<h3 id="AbstractList中的Itr类"><a href="#AbstractList中的Itr类" class="headerlink" title="AbstractList中的Itr类"></a>AbstractList中的Itr类</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Itr</span> <span class="keyword">implements</span> <span class="title">Iterator</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//下一个要访问的元素的索引</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">int</span> cursor = <span class="number">0</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//上一个访问的元素的索引</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">int</span> lastRet = -<span class="number">1</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//注意这里  每次进来的时候  都设置一个期望的修改数  等方法执行完毕后会在比较一次这个数，如果这个数跟刚开始不一样了，那么就抛出异常。</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">int</span> expectedModCount = modCount;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">next</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="comment">//方法进来前先check一遍</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">        checkForComodification();</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">try</span> &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="keyword">int</span> i = cursor;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="comment">//拿到现在的元素</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">            E next = get(i);</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="comment">//把两个指针都+1</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">            lastRet = i;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="comment">//注意此时这里的modcount和expectmodcount都不变</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">            cursor = i + <span class="number">1</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="keyword">return</span> next;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125; <span class="keyword">catch</span> (IndexOutOfBoundsException e) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            checkForComodification();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p>然后看ArrayList的remove方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(Object o)</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">if</span> (o == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> index = <span class="number">0</span>; index &lt; size; index++)</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="keyword">if</span> (elementData[index] == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">                fastRemove(index);</span></pre></td></tr><tr><td class="code"><pre><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125; <span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> index = <span class="number">0</span>; index &lt; size; index++)</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="keyword">if</span> (o.equals(elementData[index])) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">                fastRemove(index);</span></pre></td></tr><tr><td class="code"><pre><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line"> </span></pre></td></tr><tr><td class="code"><pre><span class="line"> </span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fastRemove</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//注意这里modcount++了</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    modCount++;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">int</span> numMoved = size - index - <span class="number">1</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">if</span> (numMoved &gt; <span class="number">0</span>)</span></pre></td></tr><tr><td class="code"><pre><span class="line">        System.arraycopy(elementData, index+<span class="number">1</span>, elementData, index,</span></pre></td></tr><tr><td class="code"><pre><span class="line">                numMoved);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    elementData[--size] = <span class="keyword">null</span>; <span class="comment">// Let gc do its work</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p>注意remove方法执行过后，对于iterator，他的<strong>expectedModCount为0</strong>，cursor为1，lastret是0，对于list，他的<strong>modcount为1</strong>，size为0。然后再次checkmodcount的时候就会报错了。</p>
+<h3 id="单线程环境下的解决办法"><a href="#单线程环境下的解决办法" class="headerlink" title="单线程环境下的解决办法"></a>单线程环境下的解决办法</h3><h4 id="调用itr中的remove方法"><a href="#调用itr中的remove方法" class="headerlink" title="调用itr中的remove方法"></a>调用itr中的remove方法</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">if</span> (lastRet == -<span class="number">1</span>)</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException();</span></pre></td></tr><tr><td class="code"><pre><span class="line">       checkForComodification();</span></pre></td></tr><tr><td class="code"><pre><span class="line"> </span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">try</span> &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    AbstractList.<span class="keyword">this</span>.remove(lastRet);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">if</span> (lastRet &lt; cursor)</span></pre></td></tr><tr><td class="code"><pre><span class="line">        cursor--;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    lastRet = -<span class="number">1</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//精髓在这一步</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    expectedModCount = modCount;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125; <span class="keyword">catch</span> (IndexOutOfBoundsException e) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<h4 id="ListIterator集合迭代器"><a href="#ListIterator集合迭代器" class="headerlink" title="ListIterator集合迭代器"></a>ListIterator集合迭代器</h4><ol>
+<li>允许向前，向后两个方向遍历list</li>
+<li>允许在遍历的时候修改list的元素</li>
+<li>遍历时获取迭代器当前游标所在位置</li>
+</ol>
+<h3 id="多线程环境下的解决办法"><a href="#多线程环境下的解决办法" class="headerlink" title="多线程环境下的解决办法"></a>多线程环境下的解决办法</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="comment">     *  多线程环境下的解决办法</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="comment">     */</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fun2</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    ArrayList&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;Integer&gt;();</span></pre></td></tr><tr><td class="code"><pre><span class="line">    list.add(<span class="number">1</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    list.add(<span class="number">2</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    list.add(<span class="number">3</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    list.add(<span class="number">4</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    list.add(<span class="number">5</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    Thread thread1 = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="meta">@Override</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            Iterator&lt;Integer&gt; iterator = list.iterator();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="keyword">while</span> (iterator.hasNext())&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">                System.out.println(iterator.next());</span></pre></td></tr><tr><td class="code"><pre><span class="line">                <span class="keyword">try</span> &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    Thread.sleep(<span class="number">300</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    e.printStackTrace();</span></pre></td></tr><tr><td class="code"><pre><span class="line">                &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    Thread thread2 = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="meta">@Override</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            Iterator&lt;Integer&gt; iterator = list.iterator();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="keyword">while</span> (iterator.hasNext())&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">                <span class="keyword">if</span> (iterator.next().equals(<span class="number">5</span>))&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    iterator.remove();</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    System.out.println(<span class="string">"已经移除了"</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">                &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    thread1.start();</span></pre></td></tr><tr><td class="code"><pre><span class="line">    thread2.start();</span></pre></td></tr><tr><td class="code"><pre><span class="line">    Thread.sleep(<span class="number">1000</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p>因为这里使用的是两个不同的iterator，所以这里的expectedmodcount是线程私有的，但是modcount是两个迭代器共有的，所以一个iterator在遍历一个再删除的时候，就会出现expectedModCount不等于modCount的情况。</p>
+<p>可以使用并发容器CopyOnWriteArrayList代替ArrayList和Vector。</p>
+<p>Ref:<a href="https://www.cnblogs.com/dolphin0520/p/3933551.html" target="_blank" rel="noopener">https://www.cnblogs.com/dolphin0520/p/3933551.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java%E5%9F%BA%E7%A1%80/" rel="tag"># Java基础</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/29/%E5%89%91%E6%8C%87Offer%E9%A2%98%E7%9B%AE%E5%88%86%E7%B1%BB/" rel="next" title="剑指Offer题目分类之数组">
+                <i class="fa fa-chevron-left"></i> 剑指Offer题目分类之数组
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/28/synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7/" rel="prev" title="synchronized 原理与锁升级">
+                synchronized 原理与锁升级 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpeg"
+                alt="AppleLiang" />
+            
+              <p class="site-author-name" itemprop="name">AppleLiang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/AppleLiang96" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.instagram.com/AppleLiang96" target="_blank" title="Instagram">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ConcurrentModificationException原因"><span class="nav-number">1.</span> <span class="nav-text">ConcurrentModificationException原因</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ConcurrentModificationException异常出现的原因"><span class="nav-number">1.1.</span> <span class="nav-text">ConcurrentModificationException异常出现的原因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AbstractList中的Itr类"><span class="nav-number">1.2.</span> <span class="nav-text">AbstractList中的Itr类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单线程环境下的解决办法"><span class="nav-number">1.3.</span> <span class="nav-text">单线程环境下的解决办法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#调用itr中的remove方法"><span class="nav-number">1.3.1.</span> <span class="nav-text">调用itr中的remove方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ListIterator集合迭代器"><span class="nav-number">1.3.2.</span> <span class="nav-text">ListIterator集合迭代器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程环境下的解决办法"><span class="nav-number">1.4.</span> <span class="nav-text">多线程环境下的解决办法</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AppleLiang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
