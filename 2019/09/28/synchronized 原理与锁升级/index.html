@@ -87,15 +87,15 @@
 <meta property="og:site_name" content="Hava a nice day">
 <meta property="og:description" content="synchronized 原理与锁升级synchronized 原理重量级锁对应的锁标志位是10，存储的是指向重量级监视器锁的指针。  对象头在堆内存中，对象是这样的存储的。  在对象头中，无锁的情况下存储的是对象的hashcode，GC分代年龄，锁标志位和是否偏向锁。  偏向锁（适用在没有锁竞争的同步场合）当线程1获取锁对象的时候，会在自己的栈帧中复制一份对象头中的hashcode和对象分代年龄">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153775555.png">
-<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153643309.png">
-<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153623064.png">
-<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567154246727.png">
-<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567154991737.png">
-<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567155139230.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;09&#x2F;28&#x2F;synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7&#x2F;C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153775555.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;09&#x2F;28&#x2F;synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7&#x2F;C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153643309.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;09&#x2F;28&#x2F;synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7&#x2F;C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153623064.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;09&#x2F;28&#x2F;synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7&#x2F;C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567154246727.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;09&#x2F;28&#x2F;synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7&#x2F;C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567154991737.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;09&#x2F;28&#x2F;synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7&#x2F;C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567155139230.png">
 <meta property="og:updated_time" content="2019-12-02T06:59:31.850Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153775555.png">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;09&#x2F;28&#x2F;synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7&#x2F;C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153775555.png">
 
 
 
@@ -358,19 +358,19 @@
 
       
         <h2 id="synchronized-原理与锁升级"><a href="#synchronized-原理与锁升级" class="headerlink" title="synchronized 原理与锁升级"></a>synchronized 原理与锁升级</h2><h3 id="synchronized-原理"><a href="#synchronized-原理" class="headerlink" title="synchronized 原理"></a>synchronized 原理</h3><p>重量级锁对应的锁标志位是10，存储的是指向重量级监视器锁的指针。</p>
-<p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153775555.png" alt="1567153775555"></p>
+<p><img src="/2019/09/28/synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7/C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153775555.png" alt="1567153775555"></p>
 <h3 id="对象头"><a href="#对象头" class="headerlink" title="对象头"></a>对象头</h3><p>在堆内存中，对象是这样的存储的。</p>
-<p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153643309.png" alt="1567153643309"></p>
+<p><img src="/2019/09/28/synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7/C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153643309.png" alt="1567153643309"></p>
 <p>在对象头中，无锁的情况下存储的是对象的hashcode，GC分代年龄，锁标志位和是否偏向锁。</p>
-<p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153623064.png" alt="1567153623064"></p>
+<p><img src="/2019/09/28/synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7/C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567153623064.png" alt="1567153623064"></p>
 <h3 id="偏向锁（适用在没有锁竞争的同步场合）"><a href="#偏向锁（适用在没有锁竞争的同步场合）" class="headerlink" title="偏向锁（适用在没有锁竞争的同步场合）"></a>偏向锁（适用在没有锁竞争的同步场合）</h3><p>当线程1获取锁对象的时候，会在自己的栈帧中复制一份对象头中的hashcode和对象分代年龄的信息，然后把自己的threadid赋值给这段，然后自己的栈帧中也存一个threadid。</p>
-<p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567154246727.png" alt="1567154246727"></p>
+<p><img src="/2019/09/28/synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7/C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567154246727.png" alt="1567154246727"></p>
 <p>这里有一个概念要注意就是<strong>偏向锁不会主动释放锁</strong>，因为偏向锁设计的初衷就是因为很多情况是只有一个线程在竞争锁，所以偏向该线程，不主动释放，降低获取锁的代价。之后再一次想要获取锁的时候，只需要比较当前栈帧中的threadid和对象markword中的threadid是否一样就可以了，如果不一致，说明是一个新来的线程在竞争锁，这个时候就要查看当前markword中记录的这个threadid对应的线程<strong>是否存活</strong>，如果没有存活，那么对象就马上被重置为无锁状态，新来的线程可以<strong>把它设置为偏向锁</strong>，如果存活的话，判断这个雄线程<strong>是否还需要继续持有该锁对象</strong>，如果需要，就暂停该线程，并把当前锁升级为轻量级锁，如果不想持有了，那么就把锁对象设为无锁状态，<strong>重新偏向新来的线程</strong>。</p>
 <h3 id="轻量级锁（适用于只有两个线程在竞争的环境下）"><a href="#轻量级锁（适用于只有两个线程在竞争的环境下）" class="headerlink" title="轻量级锁（适用于只有两个线程在竞争的环境下）"></a>轻量级锁（适用于只有两个线程在竞争的环境下）</h3><p>轻量级锁主要是跟自旋一起使用的，因为有些情况下，<strong>线程持有锁的时间不长</strong>，而阻塞线程需要将CPU从<strong>用户态切换为核心态</strong>，如果切换了之后，马上就释放锁了，那么就很浪费资源了。</p>
 <p>线程在执行同步块之前，JVM会现在当前线程的栈帧中创建用于<strong>储存锁记录的空间</strong>（LockRecord），并将对象头的<strong>Mark Word信息</strong>复制到锁记录中。然后线程尝试使用 <strong>CAS 将对象头的MarkWord替换为指向锁记录的指针</strong>。如果<strong>成功就把锁标志位设为00</strong>，如果失败，当前线程就会自旋获取锁，如果这个时候又来一个线程来竞争，这时候就有三个线程在竞争了，就会把轻量级锁升级为重量级锁，进行互斥和阻塞。</p>
 <p>轻量级锁解锁的时候，同样通过<strong>CAS把对象头设置为栈帧中保存的副本</strong>。</p>
-<p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567154991737.png" alt="1567154991737"></p>
-<p><strong><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567155139230.png" alt="1567155139230"></strong></p>
+<p><img src="/2019/09/28/synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7/C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567154991737.png" alt="1567154991737"></p>
+<p><strong><img src="/2019/09/28/synchronized%20%E5%8E%9F%E7%90%86%E4%B8%8E%E9%94%81%E5%8D%87%E7%BA%A7/C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1567155139230.png" alt="1567155139230"></strong></p>
 
       
     </div>
@@ -496,7 +496,7 @@
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -518,7 +518,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

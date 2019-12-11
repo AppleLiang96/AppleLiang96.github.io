@@ -87,14 +87,14 @@
 <meta property="og:site_name" content="Hava a nice day">
 <meta property="og:description" content="最近在看计算机网络的书，结合的是B站的韩立刚老师的视频，韩老师讲的非常详细，结合实例讲解，让我想起了考研的时候看的吉林大学谭庆昌老师的视频。结论：老师之间的教学水平真的是有差距的。。。话不多说，看一波面试必考的TCP协议的三握四挥。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721144670.png">
-<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564743074472.png">
-<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721635315.png">
-<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564746197678.png">
-<meta property="og:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564746212446.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;07&#x2F;28&#x2F;TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0&#x2F;C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721144670.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;07&#x2F;28&#x2F;TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0&#x2F;C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564743074472.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;07&#x2F;28&#x2F;TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0&#x2F;C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721635315.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;07&#x2F;28&#x2F;TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0&#x2F;C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564746197678.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;07&#x2F;28&#x2F;TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0&#x2F;C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564746212446.png">
 <meta property="og:updated_time" content="2019-08-02T11:45:43.728Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="c:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721144670.png">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;07&#x2F;28&#x2F;TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0&#x2F;C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721144670.png">
 
 
 
@@ -452,8 +452,8 @@
 <p>这里为什么客户端要等待一个RTT时间后才进入CLOSED状态呢？要确保服务器是否已经收到了我们的 ACK 报文，如果没有收到的话，<strong>服务器会重新发 FIN 报文给客户端</strong>，所以这时候客户端收到之后，就知道之前的ACK报文丢了，会再发一次。</p>
 <h2 id="TCP的流量控制"><a href="#TCP的流量控制" class="headerlink" title="TCP的流量控制"></a>TCP的流量控制</h2><h4 id="利用滑动窗口实现流量控制"><a href="#利用滑动窗口实现流量控制" class="headerlink" title="利用滑动窗口实现流量控制"></a>利用滑动窗口实现流量控制</h4><p>如果发送方把数据发送得过快，接收方可能会来不及接收，这就会造成数据的丢失。所谓<strong>流量控制</strong>就是让发送方的发送速率不要太快，要让接收方来得及接收。</p>
 <p>如果A发送的速率过快，B就给A回信的时候设置窗口的大小减小即可。</p>
-<p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721144670.png" alt="1564721144670"></p>
-<h4 id="超时重传时间的选择"><a href="#超时重传时间的选择" class="headerlink" title="超时重传时间的选择"></a>超时重传时间的选择</h4><p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564743074472.png" alt="1564743074472"></p>
+<p><img src="/2019/07/28/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0/C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721144670.png" alt="1564721144670"></p>
+<h4 id="超时重传时间的选择"><a href="#超时重传时间的选择" class="headerlink" title="超时重传时间的选择"></a>超时重传时间的选择</h4><p><img src="/2019/07/28/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0/C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564743074472.png" alt="1564743074472"></p>
 <p>应略大于上面得出的加权平均往返时间。</p>
 <h4 id="流量控制的死锁问题"><a href="#流量控制的死锁问题" class="headerlink" title="流量控制的死锁问题"></a>流量控制的死锁问题</h4><p>考虑一种特殊的情况，就是接收方若<strong>没有缓存</strong>足够使用，就会发送<strong>零窗口大小</strong>的报文，此时发送放将发送窗口设置为0，<strong>停止发送数据</strong>。之后接收方有<strong>足够的缓存</strong>，发送了<strong>非零窗口大小</strong>的报文，但是这个报文在中途丢失的，那么发送方的发送窗口就一直为<strong>零导致死锁</strong>。</p>
 <p>解决这个问题，TCP为每一个连接设置一个持续计时器（persistence timer）。只要TCP的一方收到对方的零窗口通知<strong>，就启动该计时器，周期性的发送一个零窗口探测报文段。对方就在确认这个报文的时候给出现在的窗口大小（注意：</strong>TCP规定，即使设置为零窗口，也必须接收以下几种报文段：零窗口探测报文段、确认报文段和携带紧急数据的报文段）。</p>
@@ -464,11 +464,11 @@
 <li>在每收到一个对新的报文段的确认后，将拥塞窗口增加至多一个 MSS 的数值。</li>
 <li>用这样的方法逐步增大发送端的拥塞窗口 cwnd，可以使分组注入到网络的速率更加合理。</li>
 </ol>
-<p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721635315.png" alt="1564721635315"></p>
+<p><img src="/2019/07/28/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0/C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564721635315.png" alt="1564721635315"></p>
 <p>维护一个cwnd的值，再维护一个慢开始的门限带，ssthresh变量。当拥塞窗口大于门限带的时候，就转为线性增长。</p>
 <p>但判断网络发生拥塞（利用超时重传时间来确认，如果在超时重传时间内没有收到对方的回执，就判断网络拥塞）时，就把慢开始的门限带设置为出现拥塞时发送窗口的大小的一半，然后重新开始慢开始算法。</p>
-<h4 id="快重传和快恢复算法"><a href="#快重传和快恢复算法" class="headerlink" title="快重传和快恢复算法"></a>快重传和快恢复算法</h4><p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564746197678.png" alt="1564746197678"></p>
-<p><img src="C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564746212446.png" alt="1564746212446"></p>
+<h4 id="快重传和快恢复算法"><a href="#快重传和快恢复算法" class="headerlink" title="快重传和快恢复算法"></a>快重传和快恢复算法</h4><p><img src="/2019/07/28/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0/C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564746197678.png" alt="1564746197678"></p>
+<p><img src="/2019/07/28/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0/C:%5CUsers%5CAppleLiang%5CDesktop%5Cblog%5Csource%5Cassets%5C1564746212446.png" alt="1564746212446"></p>
 <p>Ref:</p>
 <p><a href="https://my.oschina.net/u/658658/blog/417739" target="_blank" rel="noopener">https://my.oschina.net/u/658658/blog/417739</a></p>
 <p><a href="https://blog.csdn.net/wilsonpeng3/article/details/12869233" target="_blank" rel="noopener">https://blog.csdn.net/wilsonpeng3/article/details/12869233</a></p>
@@ -516,8 +516,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/07/29/%E5%89%91%E6%8C%87Offer%E9%A2%98%E7%9B%AE%E5%88%86%E7%B1%BB%E4%B9%8B%E5%AD%97%E7%AC%A6%E4%B8%B2/" rel="prev" title="剑指Offer题目分类之字符串">
-                剑指Offer题目分类之字符串 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/07/29/%E5%89%91%E6%8C%87Offer%E9%A2%98%E7%9B%AE%E5%88%86%E7%B1%BB/" rel="prev" title="剑指Offer题目分类之数组">
+                剑指Offer题目分类之数组 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -599,7 +599,7 @@
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -621,7 +621,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
