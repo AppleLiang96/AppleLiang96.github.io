@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="JVM,GC," />
+  <meta name="keywords" content="JVM,GC,hexo-asset-image," />
 
 
 
@@ -80,17 +80,17 @@
 
 
 <meta name="description" content="![1572485906670](2019-10-25 100004989fullgc问题.assets&#x2F;1572485906670.png) 4989应用在一小时内出现了高达60次的fullgc，总时长高达40s，直接导致OOM。首先观察引起fullgc的原因是老年代担保失败还是metaspace溢出。 ![1572486035840](2019-10-25 100004989fullgc问题.">
-<meta name="keywords" content="JVM,GC">
+<meta name="keywords" content="JVM,GC,hexo-asset-image">
 <meta property="og:type" content="article">
-<meta property="og:title" content="记一次生产的FullGC排查">
+<meta property="og:title" content="2019-10-25 100004989fullgc问题">
 <meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;12&#x2F;11&#x2F;2019-10-25%20100004989fullgc%E9%97%AE%E9%A2%98&#x2F;index.html">
 <meta property="og:site_name" content="Hava a nice day">
 <meta property="og:description" content="![1572485906670](2019-10-25 100004989fullgc问题.assets&#x2F;1572485906670.png) 4989应用在一小时内出现了高达60次的fullgc，总时长高达40s，直接导致OOM。首先观察引起fullgc的原因是老年代担保失败还是metaspace溢出。 ![1572486035840](2019-10-25 100004989fullgc问题.">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="d:%5CUsers%5Cjcliang%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1571976865529.png">
-<meta property="og:updated_time" content="2019-12-11T01:09:07.650Z">
+<meta property="og:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;12&#x2F;11&#x2F;2019-10-25%20100004989fullgc%E9%97%AE%E9%A2%98&#x2F;D:%5CUsers%5Cjcliang%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1571976865529.png">
+<meta property="og:updated_time" content="2019-12-11T01:17:43.922Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="d:%5CUsers%5Cjcliang%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1571976865529.png">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;12&#x2F;11&#x2F;2019-10-25%20100004989fullgc%E9%97%AE%E9%A2%98&#x2F;D:%5CUsers%5Cjcliang%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1571976865529.png">
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-  <title>记一次生产的FullGC排查 | Hava a nice day</title>
+  <title>2019-10-25 100004989fullgc问题 | Hava a nice day</title>
   
 
 
@@ -280,7 +280,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">记一次生产的FullGC排查</h1>
+          <h1 class="post-title" itemprop="name headline">2019-10-25 100004989fullgc问题</h1>
         
 
         <div class="post-meta">
@@ -365,7 +365,7 @@
 <p>一般来找metaspace的OOM问题定位是比较快的，因为JVM参数可以设置在OOM后自动保存dump文件，只需要把dump文件下载下来之后，用eclipse的内存检测工具观察metaspace中哪些类加载器最多即可。但是在VI上并没有dump文件，所以只能寻求别的思路。</p>
 <p>![1572235497409](2019-10-25 100004989fullgc问题.assets/1572235497409.png)</p>
 <p>这里可以看到调用4989服务最多的app<a href="http://cat.ctripcorp.com/cat/r/e?domain=100004989&amp;date=2019102500&amp;ip=10.28.130.68&amp;type=SOA2Service.clientApp&amp;sort=total&amp;min=-1&amp;max=-1&amp;queryname=" target="_blank" rel="noopener">http://cat.ctripcorp.com/cat/r/e?domain=100004989&amp;date=2019102500&amp;ip=10.28.130.68&amp;type=SOA2Service.clientApp&amp;sort=total&amp;min=-1&amp;max=-1&amp;queryname=</a></p>
-<p><img src="D:%5CUsers%5Cjcliang%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1571976865529.png" alt="1571976865529"></p>
+<p><img src="/2019/12/11/2019-10-25%20100004989fullgc%E9%97%AE%E9%A2%98/D:%5CUsers%5Cjcliang%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1571976865529.png" alt="1571976865529"></p>
 <p>10点-11点调用服务的最多的几个接口</p>
 <p>![1572320210510](2019-10-25 100004989fullgc问题.assets/1572320210510.png)</p>
 <p>0点到1点调用服务最多的几个接口</p>
@@ -418,6 +418,8 @@
             <a href="/tags/JVM/" rel="tag"># JVM</a>
           
             <a href="/tags/GC/" rel="tag"># GC</a>
+          
+            <a href="/tags/hexo-asset-image/" rel="tag"># hexo-asset-image</a>
           
         </div>
       
@@ -532,7 +534,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

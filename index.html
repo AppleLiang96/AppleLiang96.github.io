@@ -463,7 +463,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/12/11/2019-10-25%20100004989fullgc%E9%97%AE%E9%A2%98/" itemprop="url">记一次生产的FullGC排查</a></h1>
+                <a class="post-title-link" href="/2019/12/11/2019-10-25%20100004989fullgc%E9%97%AE%E9%A2%98/" itemprop="url">2019-10-25 100004989fullgc问题</a></h1>
         
 
         <div class="post-meta">
@@ -550,7 +550,7 @@
 <p>一般来找metaspace的OOM问题定位是比较快的，因为JVM参数可以设置在OOM后自动保存dump文件，只需要把dump文件下载下来之后，用eclipse的内存检测工具观察metaspace中哪些类加载器最多即可。但是在VI上并没有dump文件，所以只能寻求别的思路。</p>
 <p>![1572235497409](2019-10-25 100004989fullgc问题.assets/1572235497409.png)</p>
 <p>这里可以看到调用4989服务最多的app<a href="http://cat.ctripcorp.com/cat/r/e?domain=100004989&amp;date=2019102500&amp;ip=10.28.130.68&amp;type=SOA2Service.clientApp&amp;sort=total&amp;min=-1&amp;max=-1&amp;queryname=" target="_blank" rel="noopener">http://cat.ctripcorp.com/cat/r/e?domain=100004989&amp;date=2019102500&amp;ip=10.28.130.68&amp;type=SOA2Service.clientApp&amp;sort=total&amp;min=-1&amp;max=-1&amp;queryname=</a></p>
-<p><img src="D:%5CUsers%5Cjcliang%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1571976865529.png" alt="1571976865529"></p>
+<p><img src="/2019/12/11/2019-10-25%20100004989fullgc%E9%97%AE%E9%A2%98/D:%5CUsers%5Cjcliang%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1571976865529.png" alt="1571976865529"></p>
 <p>10点-11点调用服务的最多的几个接口</p>
 <p>![1572320210510](2019-10-25 100004989fullgc问题.assets/1572320210510.png)</p>
 <p>0点到1点调用服务最多的几个接口</p>
@@ -1582,7 +1582,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
