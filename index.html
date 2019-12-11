@@ -444,6 +444,195 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2019/12/11/2019-10-25%20100004989fullgc%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AppleLiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hava a nice day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/12/11/2019-10-25%20100004989fullgc%E9%97%AE%E9%A2%98/" itemprop="url">记一次生产的FullGC排查</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-11T09:07:27+08:00">
+                2019-12-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>![1572485906670](2019-10-25 100004989fullgc问题.assets/1572485906670.png)</p>
+<p>4989应用在一小时内出现了高达60次的fullgc，总时长高达40s，直接导致OOM。首先观察引起fullgc的原因是老年代担保失败还是metaspace溢出。</p>
+<p>![1572486035840](2019-10-25 100004989fullgc问题.assets/1572486035840.png)</p>
+<p>首先观察老年代，正常。</p>
+<p>![1572486060754](2019-10-25 100004989fullgc问题.assets/1572486060754.png)</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">-Djava.util.logging.config.file=/opt/tomcat/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Xms5120m -Xmx5120M -Xmn3036m -Xss512k -XX:MetaspaceSize=<span class="number">128</span>m -XX:MaxMetaspaceSize=<span class="number">256</span>m -XX:PermSize=<span class="number">128</span>m -XX:MaxPermSize=<span class="number">256</span>m -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=<span class="number">70</span> -XX:+ScavengeBeforeFullGC -XX:+CMSScavengeBeforeRemark -XX:+PreserveFramePointer -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=<span class="number">5</span> -XX:GCLogFileSize=<span class="number">32</span>M -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/logs/<span class="number">100004989</span> -Dport.http.server=<span class="number">8080</span> -Dlog.server=/opt/logs/<span class="number">100004989</span> -Dport.shutdown.server=<span class="number">8081</span> -Ddocbase.server=/opt/app -Dvdir.server=/<span class="keyword">package</span>-vendor-productsvc -Djava.security.egd=file:/dev/./urandom -Dcom.sun.management.jmxremote.authenticate=<span class="keyword">false</span> -Dcom.sun.management.jmxremote.ssl=<span class="keyword">false</span> -Djava.rmi.server.hostname=<span class="number">10.28</span><span class="number">.130</span><span class="number">.70</span> -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=<span class="number">8780</span> -Dcom.sun.management.jmxremote.rmi.port=<span class="number">8780</span> -Dcom.sun.management.jmxremote.local.only=<span class="keyword">false</span> -Xloggc:/opt/logs/<span class="number">100004989</span>/gc.log -DAPPLOGDIR=/opt/logs/<span class="number">100004989</span>/applog -XX:ParallelGCThreads=<span class="number">4</span> -XX:ConcGCThreads=<span class="number">4</span> -Djava.util.concurrent.ForkJoinPool.common.threadFactory=com.ctrip.forkjoinworkerthreadfactory.CtripForkJoinWorkerThreadFactory -Djdk.tls.ephemeralDHKeySize=<span class="number">2048</span> -Dignore.endorsed.dirs= -Dcatalina.base=/opt/tomcat -Dcatalina.home=/opt/tomcat -Djava.io.tmpdir=/opt/tomcat/temp</span></pre></td></tr></table></figure>
+
+<p>观察metaspace，这里可以看到metaspace在0点后一直在增加到JVM参数设置的上限（256MB），导致了fullgc。</p>
+<p>因为JDK8之后，原JDK7中的永久代分开为字符串常量池和metaspace，所以基本上可以确定是类加载器爆炸导致的OOM，一般来讲是原因是反射导致的动态类的爆炸。</p>
+<p>因为是0点后才出现的，所以应该是有job开始启动，一直在调用4989的接口。观察CAT的访问量统计，果然在0点后访问量大增。</p>
+<p>一般来找metaspace的OOM问题定位是比较快的，因为JVM参数可以设置在OOM后自动保存dump文件，只需要把dump文件下载下来之后，用eclipse的内存检测工具观察metaspace中哪些类加载器最多即可。但是在VI上并没有dump文件，所以只能寻求别的思路。</p>
+<p>![1572235497409](2019-10-25 100004989fullgc问题.assets/1572235497409.png)</p>
+<p>这里可以看到调用4989服务最多的app<a href="http://cat.ctripcorp.com/cat/r/e?domain=100004989&amp;date=2019102500&amp;ip=10.28.130.68&amp;type=SOA2Service.clientApp&amp;sort=total&amp;min=-1&amp;max=-1&amp;queryname=" target="_blank" rel="noopener">http://cat.ctripcorp.com/cat/r/e?domain=100004989&amp;date=2019102500&amp;ip=10.28.130.68&amp;type=SOA2Service.clientApp&amp;sort=total&amp;min=-1&amp;max=-1&amp;queryname=</a></p>
+<p><img src="D:%5CUsers%5Cjcliang%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1571976865529.png" alt="1571976865529"></p>
+<p>10点-11点调用服务的最多的几个接口</p>
+<p>![1572320210510](2019-10-25 100004989fullgc问题.assets/1572320210510.png)</p>
+<p>0点到1点调用服务最多的几个接口</p>
+<p>![1571982239735](2019-10-25 100004989fullgc问题.assets/1571982239735.png)</p>
+<p>有几个接口出现了明显的增加</p>
+<p>getresourcesaleitem</p>
+<p>getsyncdata</p>
+<p>为什么排除上面这两个接口的可能，首先metaspace的增长一般是反射导致不断的有动态类进入导致的，所以上面这些方法原来就被调用了几万次了，如果它们的方法里面有问题，那平时的时候就会出现metaspace增长的现象了，但是并没有出现，所以绝对不会是这种被调用几千几万次的接口导致的。</p>
+<p>queryresourceproduct</p>
+<p>通过观察该服务0点后被调用的次数，根据metespace增长的时间来判断是照妖镜服务一直在调用这个方法。</p>
+<p>之后去到这个方法的代码中观察</p>
+<p>![1572486635175](2019-10-25 100004989fullgc问题.assets/1572486635175.png)</p>
+<p>这是刚开始第一个看的方法，但是我忽略了第二行，一直在看后面这个for循环里面的业务逻辑，所以后面一直找错了方向，最后是张老师找出了这行代码。</p>
+<p>![1572003189635](2019-10-25 100004989fullgc问题.assets/1572003189635.png)</p>
+<p>可以看到这个方法每调用一次，就会生成一个新的实例</p>
+<p>![1572003204114](2019-10-25 100004989fullgc问题.assets/1572003204114.png)</p>
+<p>调用的是这个构造方法</p>
+<p>![1572003220079](2019-10-25 100004989fullgc问题.assets/1572003220079.png)</p>
+<p>![1572486812113](2019-10-25 100004989fullgc问题.assets/1572486812113.png)</p>
+<p>我们可以来测试一下为什么这个方法会导致内存泄漏</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">demo</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">NestClass</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> MapperFactory instance;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">static</span> &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            MappingContextFactory mappingContextFactory = <span class="keyword">new</span> MappingContext.Factory();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            instance = <span class="keyword">new</span> DefaultMapperFactory.Builder()</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .useBuiltinConverters(<span class="keyword">false</span>)</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .mappingContextFactory(mappingContextFactory)</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .build();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="comment">//建立对象映射  如果不是单例的话，就会发生内存泄漏  一直生成代理类</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">            instance.classMap(Student<span class="class">.<span class="keyword">class</span>, <span class="title">StudentDTO</span>.<span class="title">class</span>)</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .field("id","fullId").byDefault().register();</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> MapperFactory <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">return</span> demo.NestClass.instance;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//内存溢出</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="meta">@Test</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fun1</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        Student student = <span class="keyword">new</span> Student();</span></pre></td></tr><tr><td class="code"><pre><span class="line">        student.setAge(<span class="number">10</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        student.setId(<span class="number">10</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        student.setName(<span class="string">"xiaoming"</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            MappingContextFactory mappingContextFactory = <span class="keyword">new</span> MappingContext.Factory();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            MapperFactory mapperFactory = <span class="keyword">new</span> DefaultMapperFactory.Builder()</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .useBuiltinConverters(<span class="keyword">false</span>)</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .mappingContextFactory(mappingContextFactory)</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .build();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="comment">//建立对象映射  如果不是单例的话，就会发生内存泄漏  一直生成代理类</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">            mapperFactory.classMap(Student<span class="class">.<span class="keyword">class</span>, <span class="title">StudentDTO</span>.<span class="title">class</span>)</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .field("id","fullId").byDefault().register();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            MapperFacade mapper = mapperFactory.getMapperFacade();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            StudentDTO map = mapper.map(student, StudentDTO<span class="class">.<span class="keyword">class</span>)</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        Thread.sleep(<span class="number">1000000000</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//单例，内存不溢出</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="meta">@Test</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fun2</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        Student student = <span class="keyword">new</span> Student();</span></pre></td></tr><tr><td class="code"><pre><span class="line">        student.setAge(<span class="number">10</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        student.setId(<span class="number">10</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        student.setName(<span class="string">"xiaoming"</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            MapperFactory instance = demo.getInstance();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            MapperFacade mapper = instance.getMapperFacade();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            StudentDTO map = mapper.map(student, StudentDTO<span class="class">.<span class="keyword">class</span>)</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        Thread.sleep(<span class="number">1000000000</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p>使用单例前</p>
+<p>![1572489466409](2019-10-25 100004989fullgc问题.assets/1572489466409.png)</p>
+<p>使用单例后</p>
+<p>![1572489521049](2019-10-25 100004989fullgc问题.assets/1572489521049.png)</p>
+<p>![c43e28b3fa79a654e91d57a9f050af1](2019-10-25 100004989fullgc问题.assets/c43e28b3fa79a654e91d57a9f050af1.png)</p>
+<p>![1566543515444](2019-10-25 100004989fullgc问题.assets/1566543515444.png)</p>
+<p>![1566544252741](2019-10-25 100004989fullgc问题.assets/1566544252741.png)</p>
+<p>修改代码后发生产后，fullgc消失</p>
+<p>![1572490395618](2019-10-25 100004989fullgc问题.assets/1572490395618.png)</p>
+<p>第一遍的想法是，造成OOM肯定是因为之前没有调用过的接口被调用了导致内存泄漏了，否则之前就应该产生内存泄漏了，所以找到queryresourceproduct这个方法，但是并没有发现内存泄漏的位置。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+      
+    
+      
+        
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2019/12/09/%E5%AF%B9Happens-Before%E7%9A%84%E7%90%86%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1317,154 +1506,6 @@
     
       
     
-      
-        
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2019/07/28/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="AppleLiang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hava a nice day">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/28/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0/" itemprop="url">TCP三次握手四次分手学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-28T09:55:41+08:00">
-                2019-07-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index">
-                    <span itemprop="name">计算机网络</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>最近在看计算机网络的书，结合的是B站的韩立刚老师的视频，韩老师讲的非常详细，结合实例讲解，让我想起了考研的时候看的吉林大学谭庆昌老师的视频。结论：老师之间的教学水平真的是有差距的。。。话不多说，看一波面试必考的TCP协议的三握四挥。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/07/28/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-      
-    
   </section>
 
   
@@ -1519,7 +1560,7 @@
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1541,7 +1582,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
