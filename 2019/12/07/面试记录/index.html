@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Hava a nice day">
 <meta property="og:description" content="面试记录乐言科技 给定一个字符串，找出字符串中出现次数最多的字符（忽略大小写，输入的是string，写的时候没有注意可能会输入数字） HashMap的底层实现 1.7 1.8（面试官提了小问题：为什么hash与table.length-1，我只说了为了让更多的数字尽可能的参与与运算，面试官说还有一点是与table根本放不进去？？） ConcurrentHashMap 1.7 1.8的底层实现 My">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-03T08:01:24.887Z">
+<meta property="og:updated_time" content="2020-01-12T01:53:19.607Z">
 <meta name="twitter:card" content="summary">
 
 
@@ -478,6 +478,27 @@
 <li>最长回文字符串 写了中心拓展，问能不能优化，我说马拉车可以到o（n），但是还没学会</li>
 <li>俩数组找相同元素并去重</li>
 </ol>
+<h2 id="Soul基础架构部-offer"><a href="#Soul基础架构部-offer" class="headerlink" title="Soul基础架构部 offer~"></a>Soul基础架构部 offer~</h2><p>一面：</p>
+<ol>
+<li>RPC框架，服务注册的过程。如何实现负载均衡，负载均衡算法，如何实现链路跟踪，比方说A调用B，调用C，如何实现调用跟踪</li>
+<li>Mq的事务消息</li>
+<li>说说Lock countdownlatch</li>
+<li>悲观锁 乐观锁</li>
+<li>MySQL如何实现乐观锁</li>
+<li>索引覆盖的意思</li>
+<li>MySQL RR级别是如何实现的，间隙锁讲一下</li>
+<li>MySQL的锁反应到操作系统是一条什么样的命令？？？</li>
+<li>MySQL执行一条消息，突然停电了，消息能执行完毕么？持久化问题 redo日志</li>
+<li>一致性hash和负载均衡的问题</li>
+</ol>
+<p>二面</p>
+<ol>
+<li>分布式事务的解决方案</li>
+<li>有一张帖子表和评论表，分库分表，业务逻辑：想通过帖子id查第一页评论，通过用户id查最近的50条评论</li>
+<li>给你一张任务表，里面的任务每隔n秒跑一次，你设计一下你的方法怎么写</li>
+<li>算法题 leetcode531</li>
+<li>还有一道前缀匹配去重，没见过</li>
+</ol>
 
       
     </div>
@@ -674,7 +695,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#面试记录"><span class="nav-number">1.</span> <span class="nav-text">面试记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#乐言科技"><span class="nav-number">2.</span> <span class="nav-text">乐言科技</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#爱奇艺基础架构部（虚拟机部门）offer"><span class="nav-number">3.</span> <span class="nav-text">爱奇艺基础架构部（虚拟机部门）offer~</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#携程旅游供应商部门-offer"><span class="nav-number">4.</span> <span class="nav-text">携程旅游供应商部门 offer~</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#爱奇艺基础架构部私有云-内部转岗至虚拟机offer"><span class="nav-number">5.</span> <span class="nav-text">爱奇艺基础架构部私有云 内部转岗至虚拟机offer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#爱奇艺风控-offer"><span class="nav-number">6.</span> <span class="nav-text">爱奇艺风控 offer~</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#百度MEG一面（80min）-因个人原因放弃"><span class="nav-number">7.</span> <span class="nav-text">百度MEG一面（80min） 因个人原因放弃</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#面试记录"><span class="nav-number">1.</span> <span class="nav-text">面试记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#乐言科技"><span class="nav-number">2.</span> <span class="nav-text">乐言科技</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#爱奇艺基础架构部（虚拟机部门）offer"><span class="nav-number">3.</span> <span class="nav-text">爱奇艺基础架构部（虚拟机部门）offer~</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#携程旅游供应商部门-offer"><span class="nav-number">4.</span> <span class="nav-text">携程旅游供应商部门 offer~</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#爱奇艺基础架构部私有云-内部转岗至虚拟机offer"><span class="nav-number">5.</span> <span class="nav-text">爱奇艺基础架构部私有云 内部转岗至虚拟机offer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#爱奇艺风控-offer"><span class="nav-number">6.</span> <span class="nav-text">爱奇艺风控 offer~</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#百度MEG一面（80min）-因个人原因放弃"><span class="nav-number">7.</span> <span class="nav-text">百度MEG一面（80min） 因个人原因放弃</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Soul基础架构部-offer"><span class="nav-number">8.</span> <span class="nav-text">Soul基础架构部 offer~</span></a></li></ol></div>
             
 
           </div>
