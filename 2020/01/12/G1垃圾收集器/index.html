@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Concurrent," />
+  <meta name="keywords" content="G1," />
 
 
 
@@ -79,15 +79,15 @@
 
 
 
-<meta name="description" content="对Happens-Before的理解最近三刷《并发编程的艺术》这本书，主要对happens-before和final域还有重排序再次理解，之前看的时候有点迷。现在大概写一下对Happens-Before的理解。 其实总结一下hp就四条主要规则。  一个线程内部是hb的，因为一个线程在一个CPU上执行，共用一个寄存器（这里可以理解成JMM中的工作内存），所以肯定不会出现可见性问题。而且有as-if-">
-<meta name="keywords" content="Concurrent">
+<meta name="description" content="G1垃圾收集器G1堆内存的分布G1垃圾收集器将堆内存分为一系列大小相等Region区，大小在1MB-32MB之间，每一个分区不会确定的为某个代服务，可以在老年代和年轻代之间切换。 Remember SetRSet用于记录从非收集部分指向收集部分的指针的集合（从其他Region指向一个Region的指针情况。一个Region就会有一个RSet，这样的好处是在回收一个Region的时候不需要执行全堆的">
+<meta name="keywords" content="G1">
 <meta property="og:type" content="article">
-<meta property="og:title" content="对Happens-Before的理解">
-<meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;12&#x2F;09&#x2F;%E5%AF%B9Happens-Before%E7%9A%84%E7%90%86%E8%A7%A3&#x2F;index.html">
+<meta property="og:title" content="G1垃圾收集器">
+<meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2020&#x2F;01&#x2F;12&#x2F;G1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8&#x2F;index.html">
 <meta property="og:site_name" content="Hava a nice day">
-<meta property="og:description" content="对Happens-Before的理解最近三刷《并发编程的艺术》这本书，主要对happens-before和final域还有重排序再次理解，之前看的时候有点迷。现在大概写一下对Happens-Before的理解。 其实总结一下hp就四条主要规则。  一个线程内部是hb的，因为一个线程在一个CPU上执行，共用一个寄存器（这里可以理解成JMM中的工作内存），所以肯定不会出现可见性问题。而且有as-if-">
+<meta property="og:description" content="G1垃圾收集器G1堆内存的分布G1垃圾收集器将堆内存分为一系列大小相等Region区，大小在1MB-32MB之间，每一个分区不会确定的为某个代服务，可以在老年代和年轻代之间切换。 Remember SetRSet用于记录从非收集部分指向收集部分的指针的集合（从其他Region指向一个Region的指针情况。一个Region就会有一个RSet，这样的好处是在回收一个Region的时候不需要执行全堆的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-08T03:50:01.825Z">
+<meta property="og:updated_time" content="2020-01-12T06:28:26.660Z">
 <meta name="twitter:card" content="summary">
 
 
@@ -118,13 +118,13 @@
 
 
 
-  <link rel="canonical" href="http://liangjiacheng.cn/2019/12/09/对Happens-Before的理解/"/>
+  <link rel="canonical" href="http://liangjiacheng.cn/2020/01/12/G1垃圾收集器/"/>
 
 
 
 
 
-  <title>对Happens-Before的理解 | Hava a nice day</title>
+  <title>G1垃圾收集器 | Hava a nice day</title>
   
 
 
@@ -261,7 +261,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2019/12/09/%E5%AF%B9Happens-Before%E7%9A%84%E7%90%86%E8%A7%A3/">
+    <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2020/01/12/G1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="AppleLiang">
@@ -278,7 +278,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">对Happens-Before的理解</h1>
+          <h1 class="post-title" itemprop="name headline">G1垃圾收集器</h1>
         
 
         <div class="post-meta">
@@ -290,8 +290,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-09T19:28:11+08:00">
-                2019-12-09
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-12T14:27:34+08:00">
+                2020-01-12
               </time>
             
 
@@ -313,8 +313,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%B9%B6%E5%8F%91/" itemprop="url" rel="index">
-                    <span itemprop="name">并发</span>
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
                   </a>
                 </span>
 
@@ -350,15 +350,39 @@
       
 
       
-        <h2 id="对Happens-Before的理解"><a href="#对Happens-Before的理解" class="headerlink" title="对Happens-Before的理解"></a>对Happens-Before的理解</h2><p>最近三刷《并发编程的艺术》这本书，主要对happens-before和final域还有重排序再次理解，之前看的时候有点迷。现在大概写一下对Happens-Before的理解。</p>
-<p>其实总结一下hp就四条主要规则。</p>
+        <h2 id="G1垃圾收集器"><a href="#G1垃圾收集器" class="headerlink" title="G1垃圾收集器"></a>G1垃圾收集器</h2><h3 id="G1堆内存的分布"><a href="#G1堆内存的分布" class="headerlink" title="G1堆内存的分布"></a>G1堆内存的分布</h3><p>G1垃圾收集器将堆内存分为一系列大小相等Region区，大小在1MB-32MB之间，<strong>每一个分区不会确定的为某个代服务</strong>，可以在老年代和年轻代之间切换。</p>
+<h3 id="Remember-Set"><a href="#Remember-Set" class="headerlink" title="Remember Set"></a>Remember Set</h3><p>RSet用于记录从非收集部分指向收集部分的指针的集合（从其他Region指向一个Region的指针情况。<strong>一个Region就会有一个RSet</strong>，这样的好处是在回收一个Region的时候不需要执行全堆的扫描，只需要检查他的RSet就可以找到外部引用，这些引用就是gc root。</p>
+<h3 id="Collection-Set"><a href="#Collection-Set" class="headerlink" title="Collection Set"></a>Collection Set</h3><p>就是每次<strong>并发标记周期</strong>的<strong>标记需要回收</strong>的区域。有两个，一个是<strong>年轻代</strong>的Set一个是<strong>老年代</strong>的Set。在任意一次收集暂停中，CSet所有分区<strong>都会被释放</strong>，内部存活的对象都会被转移到分配的空闲分区中。</p>
+<h3 id="年轻代收集"><a href="#年轻代收集" class="headerlink" title="年轻代收集"></a>年轻代收集</h3><p>与CMS差不多，首先</p>
 <ol>
-<li>一个线程内部是hb的，因为一个线程在一个CPU上执行，<strong>共用一个寄存器</strong>（这里可以理解成JMM中的工作内存），所以肯定不会出现可见性问题。而且有<strong>as-if-serial</strong>（词面意思，仿佛是串行的，其实就是单线程内，在我们程序员来看，各行代码都是按照顺序执行，但是实际上编译器和处理器会对数据没有依赖的代码行进行重排序，但是并不影响结果，因为是单线程的）的保证。</li>
-<li>第二个是监视器锁的保证。这时因为一个线程在<strong>unlock</strong>的时候一定会把<strong>寄存器中所有的数据刷新</strong>到<strong>主存</strong>。而lock的时候会把寄存器中所有的变量<strong>都清空</strong>，然后去主存读最新的数据。</li>
-<li>volatile的规则。这是因为一个volatile变量写的时候会把<strong>寄存器中的volatile变量刷新到主存</strong>，但是由于<strong>规则1和规则4（传递性）</strong>，所有volatile变量<strong>之前</strong>的<strong>修改的变量</strong>也要刷新到主存。然后volatile读的时候会把本地寄存器的变量置为无效，并且到主存中去读，这就保证了它能读到线程1 volatile写之前所有的变量，保证了可见性。</li>
-<li>传递性。a hp b，b hp c，a hp c。</li>
+<li>年轻代由几个不连续的区块组成</li>
+<li>ygc是并行的，类似于parnew</li>
+<li>将活着的对象复制到sur区，活着晋升到old区</li>
+<li>调整eden区和sur区的大小</li>
 </ol>
-<p>Happens-before把多线程的程序分成一块一块的，<strong>但是给他们划了线（规则）</strong>，在单块程序中运行的时候由于<strong>规则1</strong>的保证，是没问题的。到运行到加锁解锁，或者volatile关键字的时候，单线程内部的程序就需要与主存进行同步了，<strong>把线程内部的寄存器的变量刷新到主存中，或者是读取主存中最新的信息。</strong></p>
+<p><strong>与parnew的区别就是第四条，它会动态调整年轻代的大小</strong></p>
+<h3 id="并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）"><a href="#并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）" class="headerlink" title="并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）"></a>并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）</h3><ol>
+<li>初始标记 stw，伴随着一次ygc的发生，所以oldgc直接重用了这个阶段。</li>
+<li>扫描根引用区（<strong>并行的</strong>），刚刚已经发生了一次ygc了，所以这个时候eden区是空的，年轻代存活的对象都在sur区，所以这个时候直接扫描sur区非常高效，扫描sur区到老年代的引用。<strong>这个时候要注意，如果这个阶段eden区满了，是不会发生ygc的，必须等这个阶段结束才行</strong></li>
+<li>并发标记，寻找整个堆存活的对象，这个阶段可以被ygc打断</li>
+<li>重新标记（stw），完成最后的存活对象标记，使用了SATB（快照）算法。</li>
+<li>清理（stw）<ul>
+<li>整理堆分区，为<strong>混合收集周期识别回收收益高</strong>(基于释放空间和暂停目标)的老年代分区集合；</li>
+<li><strong>这个阶段会收集完全空闲的区块，也就是不包括任何存活对象的区块</strong></li>
+</ul>
+</li>
+</ol>
+<h3 id="混合垃圾收集期"><a href="#混合垃圾收集期" class="headerlink" title="混合垃圾收集期"></a>混合垃圾收集期</h3><p>不仅进行<strong>ygc</strong>，而且根据<strong>预设的暂停时间</strong>和回收收益进行，将之前并发标记周期中标记的区块加入Cset，直到所有的CSet中的区块被收集。然后<strong>再次进入</strong>并发标记周期。</p>
+<h3 id="fullgc"><a href="#fullgc" class="headerlink" title="fullgc"></a>fullgc</h3><p>出现的情况跟CMS一样</p>
+<p>ygc时担保失败</p>
+<p>大对象进入老年代失败</p>
+<h3 id="与CMS的对比"><a href="#与CMS的对比" class="headerlink" title="与CMS的对比"></a>与CMS的对比</h3><ol>
+<li>由于把三块内存变成了几百块内存，内存块的粒度变小了，从而可以垃圾回收工作更彻底的并行化。</li>
+<li>G1的另一个显著特点他能够让用户设置应用的暂停时间，在mixgc的时候，是选择并发收集周期中标记的收益度高的模块进入CSet，所以这个时候可控。</li>
+<li>由于内存块比较小（这里主要是考虑老年代的内存碎片问题，因为CMS的老年代是一整大块，所以当标记整理完之后内存碎片的问题格外严重，如果启动内存压缩，那么就会影响性能，但是G1的分块化可以使这个内存碎片的问题降低到最小），进行内存压缩整理的代价都比较小。</li>
+</ol>
+<p><a href="https://blog.csdn.net/coderlius/article/details/79272773" target="_blank" rel="noopener">https://blog.csdn.net/coderlius/article/details/79272773</a></p>
+<p><a href="https://www.jianshu.com/p/aef0f4765098" target="_blank" rel="noopener">https://www.jianshu.com/p/aef0f4765098</a></p>
 
       
     </div>
@@ -376,7 +400,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Concurrent/" rel="tag"># Concurrent</a>
+            <a href="/tags/G1/" rel="tag"># G1</a>
           
         </div>
       
@@ -389,8 +413,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/12/07/%E9%9D%A2%E8%AF%95%E8%AE%B0%E5%BD%95/" rel="next" title="面试记录">
-                <i class="fa fa-chevron-left"></i> 面试记录
+              <a href="/2020/01/12/%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF/" rel="next" title="学习之路">
+                <i class="fa fa-chevron-left"></i> 学习之路
               </a>
             
           </div>
@@ -398,10 +422,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/01/02/FutureTask/" rel="prev" title="FutureTask">
-                FutureTask <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -553,7 +573,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#对Happens-Before的理解"><span class="nav-number">1.</span> <span class="nav-text">对Happens-Before的理解</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#G1垃圾收集器"><span class="nav-number">1.</span> <span class="nav-text">G1垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#G1堆内存的分布"><span class="nav-number">1.1.</span> <span class="nav-text">G1堆内存的分布</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Remember-Set"><span class="nav-number">1.2.</span> <span class="nav-text">Remember Set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Collection-Set"><span class="nav-number">1.3.</span> <span class="nav-text">Collection Set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#年轻代收集"><span class="nav-number">1.4.</span> <span class="nav-text">年轻代收集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）"><span class="nav-number">1.5.</span> <span class="nav-text">并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#混合垃圾收集期"><span class="nav-number">1.6.</span> <span class="nav-text">混合垃圾收集期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fullgc"><span class="nav-number">1.7.</span> <span class="nav-text">fullgc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与CMS的对比"><span class="nav-number">1.8.</span> <span class="nav-text">与CMS的对比</span></a></li></ol></li></ol></div>
             
 
           </div>

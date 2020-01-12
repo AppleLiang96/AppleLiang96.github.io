@@ -444,6 +444,182 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2020/01/12/G1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AppleLiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hava a nice day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/01/12/G1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/" itemprop="url">G1垃圾收集器</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-12T14:27:34+08:00">
+                2020-01-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="G1垃圾收集器"><a href="#G1垃圾收集器" class="headerlink" title="G1垃圾收集器"></a>G1垃圾收集器</h2><h3 id="G1堆内存的分布"><a href="#G1堆内存的分布" class="headerlink" title="G1堆内存的分布"></a>G1堆内存的分布</h3><p>G1垃圾收集器将堆内存分为一系列大小相等Region区，大小在1MB-32MB之间，<strong>每一个分区不会确定的为某个代服务</strong>，可以在老年代和年轻代之间切换。</p>
+<h3 id="Remember-Set"><a href="#Remember-Set" class="headerlink" title="Remember Set"></a>Remember Set</h3><p>RSet用于记录从非收集部分指向收集部分的指针的集合（从其他Region指向一个Region的指针情况。<strong>一个Region就会有一个RSet</strong>，这样的好处是在回收一个Region的时候不需要执行全堆的扫描，只需要检查他的RSet就可以找到外部引用，这些引用就是gc root。</p>
+<h3 id="Collection-Set"><a href="#Collection-Set" class="headerlink" title="Collection Set"></a>Collection Set</h3><p>就是每次<strong>并发标记周期</strong>的<strong>标记需要回收</strong>的区域。有两个，一个是<strong>年轻代</strong>的Set一个是<strong>老年代</strong>的Set。在任意一次收集暂停中，CSet所有分区<strong>都会被释放</strong>，内部存活的对象都会被转移到分配的空闲分区中。</p>
+<h3 id="年轻代收集"><a href="#年轻代收集" class="headerlink" title="年轻代收集"></a>年轻代收集</h3><p>与CMS差不多，首先</p>
+<ol>
+<li>年轻代由几个不连续的区块组成</li>
+<li>ygc是并行的，类似于parnew</li>
+<li>将活着的对象复制到sur区，活着晋升到old区</li>
+<li>调整eden区和sur区的大小</li>
+</ol>
+<p><strong>与parnew的区别就是第四条，它会动态调整年轻代的大小</strong></p>
+<h3 id="并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）"><a href="#并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）" class="headerlink" title="并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）"></a>并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）</h3><ol>
+<li>初始标记 stw，伴随着一次ygc的发生，所以oldgc直接重用了这个阶段。</li>
+<li>扫描根引用区（<strong>并行的</strong>），刚刚已经发生了一次ygc了，所以这个时候eden区是空的，年轻代存活的对象都在sur区，所以这个时候直接扫描sur区非常高效，扫描sur区到老年代的引用。<strong>这个时候要注意，如果这个阶段eden区满了，是不会发生ygc的，必须等这个阶段结束才行</strong></li>
+<li>并发标记，寻找整个堆存活的对象，这个阶段可以被ygc打断</li>
+<li>重新标记（stw），完成最后的存活对象标记，使用了SATB（快照）算法。</li>
+<li>清理（stw）<ul>
+<li>整理堆分区，为<strong>混合收集周期识别回收收益高</strong>(基于释放空间和暂停目标)的老年代分区集合；</li>
+<li><strong>这个阶段会收集完全空闲的区块，也就是不包括任何存活对象的区块</strong></li>
+</ul>
+</li>
+</ol>
+<h3 id="混合垃圾收集期"><a href="#混合垃圾收集期" class="headerlink" title="混合垃圾收集期"></a>混合垃圾收集期</h3><p>不仅进行<strong>ygc</strong>，而且根据<strong>预设的暂停时间</strong>和回收收益进行，将之前并发标记周期中标记的区块加入Cset，直到所有的CSet中的区块被收集。然后<strong>再次进入</strong>并发标记周期。</p>
+<h3 id="fullgc"><a href="#fullgc" class="headerlink" title="fullgc"></a>fullgc</h3><p>出现的情况跟CMS一样</p>
+<p>ygc时担保失败</p>
+<p>大对象进入老年代失败</p>
+<h3 id="与CMS的对比"><a href="#与CMS的对比" class="headerlink" title="与CMS的对比"></a>与CMS的对比</h3><ol>
+<li>由于把三块内存变成了几百块内存，内存块的粒度变小了，从而可以垃圾回收工作更彻底的并行化。</li>
+<li>G1的另一个显著特点他能够让用户设置应用的暂停时间，在mixgc的时候，是选择并发收集周期中标记的收益度高的模块进入CSet，所以这个时候可控。</li>
+<li>由于内存块比较小（这里主要是考虑老年代的内存碎片问题，因为CMS的老年代是一整大块，所以当标记整理完之后内存碎片的问题格外严重，如果启动内存压缩，那么就会影响性能，但是G1的分块化可以使这个内存碎片的问题降低到最小），进行内存压缩整理的代价都比较小。</li>
+</ol>
+<p><a href="https://blog.csdn.net/coderlius/article/details/79272773" target="_blank" rel="noopener">https://blog.csdn.net/coderlius/article/details/79272773</a></p>
+<p><a href="https://www.jianshu.com/p/aef0f4765098" target="_blank" rel="noopener">https://www.jianshu.com/p/aef0f4765098</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+      
+    
+      
+        
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2020/01/12/%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1463,8 +1639,6 @@
 
       
     
-      
-    
   </section>
 
   
@@ -1519,7 +1693,7 @@
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">23</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1541,7 +1715,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
