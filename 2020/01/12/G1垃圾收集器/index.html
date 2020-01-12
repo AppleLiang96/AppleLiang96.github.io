@@ -79,15 +79,15 @@
 
 
 
-<meta name="description" content="G1垃圾收集器G1堆内存的分布G1垃圾收集器将堆内存分为一系列大小相等Region区，大小在1MB-32MB之间，每一个分区不会确定的为某个代服务，可以在老年代和年轻代之间切换。 Remember SetRSet用于记录从非收集部分指向收集部分的指针的集合（从其他Region指向一个Region的指针情况。一个Region就会有一个RSet，这样的好处是在回收一个Region的时候不需要执行全堆的">
+<meta name="description" content="G1垃圾收集器G1堆内存的分布G1垃圾收集器将堆内存分为一系列大小相等Region区，大小在1MB-32MB之间，每一个分区不会确定的为某个代服务，可以在老年代和年轻代之间切换。 Remember Set">
 <meta name="keywords" content="G1">
 <meta property="og:type" content="article">
 <meta property="og:title" content="G1垃圾收集器">
 <meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2020&#x2F;01&#x2F;12&#x2F;G1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8&#x2F;index.html">
 <meta property="og:site_name" content="Hava a nice day">
-<meta property="og:description" content="G1垃圾收集器G1堆内存的分布G1垃圾收集器将堆内存分为一系列大小相等Region区，大小在1MB-32MB之间，每一个分区不会确定的为某个代服务，可以在老年代和年轻代之间切换。 Remember SetRSet用于记录从非收集部分指向收集部分的指针的集合（从其他Region指向一个Region的指针情况。一个Region就会有一个RSet，这样的好处是在回收一个Region的时候不需要执行全堆的">
+<meta property="og:description" content="G1垃圾收集器G1堆内存的分布G1垃圾收集器将堆内存分为一系列大小相等Region区，大小在1MB-32MB之间，每一个分区不会确定的为某个代服务，可以在老年代和年轻代之间切换。 Remember Set">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-01-12T06:28:26.660Z">
+<meta property="og:updated_time" content="2020-01-12T06:55:19.886Z">
 <meta name="twitter:card" content="summary">
 
 
@@ -351,7 +351,9 @@
 
       
         <h2 id="G1垃圾收集器"><a href="#G1垃圾收集器" class="headerlink" title="G1垃圾收集器"></a>G1垃圾收集器</h2><h3 id="G1堆内存的分布"><a href="#G1堆内存的分布" class="headerlink" title="G1堆内存的分布"></a>G1堆内存的分布</h3><p>G1垃圾收集器将堆内存分为一系列大小相等Region区，大小在1MB-32MB之间，<strong>每一个分区不会确定的为某个代服务</strong>，可以在老年代和年轻代之间切换。</p>
-<h3 id="Remember-Set"><a href="#Remember-Set" class="headerlink" title="Remember Set"></a>Remember Set</h3><p>RSet用于记录从非收集部分指向收集部分的指针的集合（从其他Region指向一个Region的指针情况。<strong>一个Region就会有一个RSet</strong>，这样的好处是在回收一个Region的时候不需要执行全堆的扫描，只需要检查他的RSet就可以找到外部引用，这些引用就是gc root。</p>
+<h3 id="Remember-Set"><a href="#Remember-Set" class="headerlink" title="Remember Set"></a>Remember Set</h3><a id="more"></a>
+
+<p>RSet用于记录从非收集部分指向收集部分的指针的集合（从其他Region指向一个Region的指针情况。<strong>一个Region就会有一个RSet</strong>，这样的好处是在回收一个Region的时候不需要执行全堆的扫描，只需要检查他的RSet就可以找到外部引用，这些引用就是gc root。</p>
 <h3 id="Collection-Set"><a href="#Collection-Set" class="headerlink" title="Collection Set"></a>Collection Set</h3><p>就是每次<strong>并发标记周期</strong>的<strong>标记需要回收</strong>的区域。有两个，一个是<strong>年轻代</strong>的Set一个是<strong>老年代</strong>的Set。在任意一次收集暂停中，CSet所有分区<strong>都会被释放</strong>，内部存活的对象都会被转移到分配的空闲分区中。</p>
 <h3 id="年轻代收集"><a href="#年轻代收集" class="headerlink" title="年轻代收集"></a>年轻代收集</h3><p>与CMS差不多，首先</p>
 <ol>
