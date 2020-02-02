@@ -506,25 +506,14 @@
 
       
         
-          
-            <h2 id="关于Java的“锁”"><a href="#关于Java的“锁”" class="headerlink" title="关于Java的“锁”"></a>关于Java的“锁”</h2><p>其实不管是Java还是其他语言，锁的概念肯定都是存在。其实就是多个线程去争抢一个资源的概念。看了synchronized和juc中的lock觉得实现机制差不多，所以写下了这篇博客。</p>
-<h3 id="锁的概念"><a href="#锁的概念" class="headerlink" title="锁的概念"></a>锁的概念</h3><p>那我们的一个资源可能不是单个的变量。可能是一段程序。所以我们利用“锁”去作为你抢到这个资源的<strong>“证明”</strong>，一般这个“锁”就是一个<strong>标志位</strong>。比方说synchronized<strong>轻量级锁</strong>时利用的<strong>对象头中的ThreadId</strong>，<strong>重量级锁</strong>时利用的 <strong>monitor</strong>对象中的<strong>owner</strong>字段。J.U.C包中AQS利用的<strong>currentThread</strong>等。</p>
-<h3 id="争抢锁的设计"><a href="#争抢锁的设计" class="headerlink" title="争抢锁的设计"></a>争抢锁的设计</h3><p>首先锁的这个变量一定要保证<strong>可见性</strong>。因为多个线程只有在观测的时候保证一致性才有意义。比方说J.U.C中利用<strong>volatile</strong>关键词来保证。</p>
-<h4 id="从简单到复杂"><a href="#从简单到复杂" class="headerlink" title="从简单到复杂"></a>从简单到复杂</h4><p>先把问题简单化。当只有两个线程在争抢的时候，肯定有一个线程能把自己设置到<strong>标志位上</strong>，然后标志位是多线程可见的。所以这个时候另一个线程看到标志位<strong>被别人抢走了。</strong>这个时候，第二个线程只能<strong>等</strong>，也就是挂起线程。这个需要考虑两个问题，我挂起了线程，<strong>挂多久合适呢</strong>？其实多久都不合适，因为这个时候我们应当要想到一个线程通信的机制。<strong>因为只有另外一个线程占用完毕了，我这个线程醒了才是有意义的。</strong>所以我们需要采用类似wait，notify的线程通信手段。</p>
-<p>第二个问题。一个线程的占用“锁”的时间是多少？如果时间很短，我们需要使用挂起线程这种重量级的操作嘛？所以<strong>自旋锁就被引入了</strong>。这其实是一种<strong>乐观</strong>的机制，就是提前假设一个资源不会被占用很久，所以利用自旋锁等待一会。如果自选到一定次数了，那还是得休息~</p>
-<p>两个线程的问题解决了。现在把问题复杂化，<strong>当多个线程来争抢的时候，又会有什么新问题？</strong></p>
-<ol>
-<li>多个线程在等待，得用容器来存储吧？用什么数据结构合适？</li>
-<li>一个线程占用完资源了，该<strong>唤醒哪一个线程</strong>？</li>
-</ol>
-<p>针对第一个问题，我相信稍有数据结构常识的人都会想到<strong>队列</strong>，也就是<strong>双向链表</strong>的数据结构。因为这个跟我们现实中的排队模型太像了。因为队列会持有head和tail两个指针，所以这个时候当一个线程来抢锁的时候，发现资源已经被占用，只需要把自己封装成一个Node，并且挂到tail后面去即可。</p>
-<p>针对第二个问题，那肯定是唤醒<strong>head</strong>结点了。</p>
-<blockquote>
-<p>其实这里看过synchronized原理的应该知道monitor对象中也有一个waitset对吧，也是利用一个容器来存储这些等待的线程。</p>
-</blockquote>
-<p>这个时候我们还需要考虑一个公平非公平的问题，就是线程每次进来都挂到tail，这是一种<strong>公平锁</strong>机制。为了实现<strong>非公平锁</strong>机制，所以J.U.C中，<strong>利用每次线程进来先抢一下head节点来实现。</strong></p>
-
-          
+          <h2 id="关于Java的“锁”"><a href="#关于Java的“锁”" class="headerlink" title="关于Java的“锁”"></a>关于Java的“锁”</h2><p>其实不管是Java还是其他语言，锁的概念肯定都是存在。其实就是多个线程去争抢一个资源的概念。看了synchronized和juc中的lock觉得实现机制差不多，所以写下了这篇博客。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/01/31/%E5%85%B3%E4%BA%8EJava%E4%B8%AD%E7%9A%84%E9%94%81/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>

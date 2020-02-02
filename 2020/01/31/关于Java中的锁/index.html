@@ -79,15 +79,15 @@
 
 
 
-<meta name="description" content="关于Java的“锁”其实不管是Java还是其他语言，锁的概念肯定都是存在。其实就是多个线程去争抢一个资源的概念。看了synchronized和juc中的lock觉得实现机制差不多，所以写下了这篇博客。 锁的概念那我们的一个资源可能不是单个的变量。可能是一段程序。所以我们利用“锁”去作为你抢到这个资源的“证明”，一般这个“锁”就是一个标志位。比方说synchronized轻量级锁时利用的对象头中的T">
+<meta name="description" content="关于Java的“锁”其实不管是Java还是其他语言，锁的概念肯定都是存在。其实就是多个线程去争抢一个资源的概念。看了synchronized和juc中的lock觉得实现机制差不多，所以写下了这篇博客。">
 <meta name="keywords" content="锁">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于Java中的锁">
 <meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2020&#x2F;01&#x2F;31&#x2F;%E5%85%B3%E4%BA%8EJava%E4%B8%AD%E7%9A%84%E9%94%81&#x2F;index.html">
 <meta property="og:site_name" content="Have a nice day">
-<meta property="og:description" content="关于Java的“锁”其实不管是Java还是其他语言，锁的概念肯定都是存在。其实就是多个线程去争抢一个资源的概念。看了synchronized和juc中的lock觉得实现机制差不多，所以写下了这篇博客。 锁的概念那我们的一个资源可能不是单个的变量。可能是一段程序。所以我们利用“锁”去作为你抢到这个资源的“证明”，一般这个“锁”就是一个标志位。比方说synchronized轻量级锁时利用的对象头中的T">
+<meta property="og:description" content="关于Java的“锁”其实不管是Java还是其他语言，锁的概念肯定都是存在。其实就是多个线程去争抢一个资源的概念。看了synchronized和juc中的lock觉得实现机制差不多，所以写下了这篇博客。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-02-02T08:03:47.427Z">
+<meta property="og:updated_time" content="2020-02-02T08:24:08.172Z">
 <meta name="twitter:card" content="summary">
 
 
@@ -321,6 +321,8 @@
 
       
         <h2 id="关于Java的“锁”"><a href="#关于Java的“锁”" class="headerlink" title="关于Java的“锁”"></a>关于Java的“锁”</h2><p>其实不管是Java还是其他语言，锁的概念肯定都是存在。其实就是多个线程去争抢一个资源的概念。看了synchronized和juc中的lock觉得实现机制差不多，所以写下了这篇博客。</p>
+<a id="more"></a>
+
 <h3 id="锁的概念"><a href="#锁的概念" class="headerlink" title="锁的概念"></a>锁的概念</h3><p>那我们的一个资源可能不是单个的变量。可能是一段程序。所以我们利用“锁”去作为你抢到这个资源的<strong>“证明”</strong>，一般这个“锁”就是一个<strong>标志位</strong>。比方说synchronized<strong>轻量级锁</strong>时利用的<strong>对象头中的ThreadId</strong>，<strong>重量级锁</strong>时利用的 <strong>monitor</strong>对象中的<strong>owner</strong>字段。J.U.C包中AQS利用的<strong>currentThread</strong>等。</p>
 <h3 id="争抢锁的设计"><a href="#争抢锁的设计" class="headerlink" title="争抢锁的设计"></a>争抢锁的设计</h3><p>首先锁的这个变量一定要保证<strong>可见性</strong>。因为多个线程只有在观测的时候保证一致性才有意义。比方说J.U.C中利用<strong>volatile</strong>关键词来保证。</p>
 <h4 id="从简单到复杂"><a href="#从简单到复杂" class="headerlink" title="从简单到复杂"></a>从简单到复杂</h4><p>先把问题简单化。当只有两个线程在争抢的时候，肯定有一个线程能把自己设置到<strong>标志位上</strong>，然后标志位是多线程可见的。所以这个时候另一个线程看到标志位<strong>被别人抢走了。</strong>这个时候，第二个线程只能<strong>等</strong>，也就是挂起线程。这个需要考虑两个问题，我挂起了线程，<strong>挂多久合适呢</strong>？其实多久都不合适，因为这个时候我们应当要想到一个线程通信的机制。<strong>因为只有另外一个线程占用完毕了，我这个线程醒了才是有意义的。</strong>所以我们需要采用类似wait，notify的线程通信手段。</p>
