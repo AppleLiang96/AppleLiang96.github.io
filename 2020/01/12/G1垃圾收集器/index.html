@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="G1," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="G1垃圾收集器G1堆内存的分布G1垃圾收集器将堆内存分为一系列大小相等Region区，大小在1MB-32MB之间，每一个分区不会确定的为某个代服务，可以在老年代和年轻代之间切换。 Remember Set">
+<meta name="keywords" content="G1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="G1垃圾收集器">
+<meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2020&#x2F;01&#x2F;12&#x2F;G1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8&#x2F;index.html">
+<meta property="og:site_name" content="Have a nice day">
+<meta property="og:description" content="G1垃圾收集器G1堆内存的分布G1垃圾收集器将堆内存分为一系列大小相等Region区，大小在1MB-32MB之间，每一个分区不会确定的为某个代服务，可以在老年代和年轻代之间切换。 Remember Set">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-01-12T06:55:19.886Z">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://liangjiacheng.cn/2020/01/12/G1垃圾收集器/"/>
+
+
+
+
+
+  <title>G1垃圾收集器 | Have a nice day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Have a nice day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2020/01/12/G1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AppleLiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Have a nice day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">G1垃圾收集器</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-12T14:27:34+08:00">
+                2020-01-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="G1垃圾收集器"><a href="#G1垃圾收集器" class="headerlink" title="G1垃圾收集器"></a>G1垃圾收集器</h2><h3 id="G1堆内存的分布"><a href="#G1堆内存的分布" class="headerlink" title="G1堆内存的分布"></a>G1堆内存的分布</h3><p>G1垃圾收集器将堆内存分为一系列大小相等Region区，大小在1MB-32MB之间，<strong>每一个分区不会确定的为某个代服务</strong>，可以在老年代和年轻代之间切换。</p>
+<h3 id="Remember-Set"><a href="#Remember-Set" class="headerlink" title="Remember Set"></a>Remember Set</h3><a id="more"></a>
+
+<p>RSet用于记录从非收集部分指向收集部分的指针的集合（从其他Region指向一个Region的指针情况。<strong>一个Region就会有一个RSet</strong>，这样的好处是在回收一个Region的时候不需要执行全堆的扫描，只需要检查他的RSet就可以找到外部引用，这些引用就是gc root。</p>
+<h3 id="Collection-Set"><a href="#Collection-Set" class="headerlink" title="Collection Set"></a>Collection Set</h3><p>就是每次<strong>并发标记周期</strong>的<strong>标记需要回收</strong>的区域。有两个，一个是<strong>年轻代</strong>的Set一个是<strong>老年代</strong>的Set。在任意一次收集暂停中，CSet所有分区<strong>都会被释放</strong>，内部存活的对象都会被转移到分配的空闲分区中。</p>
+<h3 id="年轻代收集"><a href="#年轻代收集" class="headerlink" title="年轻代收集"></a>年轻代收集</h3><p>与CMS差不多，首先</p>
+<ol>
+<li>年轻代由几个不连续的区块组成</li>
+<li>ygc是并行的，类似于parnew</li>
+<li>将活着的对象复制到sur区，活着晋升到old区</li>
+<li>调整eden区和sur区的大小</li>
+</ol>
+<p><strong>与parnew的区别就是第四条，它会动态调整年轻代的大小</strong></p>
+<h3 id="并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）"><a href="#并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）" class="headerlink" title="并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）"></a>并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）</h3><ol>
+<li>初始标记 stw，伴随着一次ygc的发生，所以oldgc直接重用了这个阶段。</li>
+<li>扫描根引用区（<strong>并行的</strong>），刚刚已经发生了一次ygc了，所以这个时候eden区是空的，年轻代存活的对象都在sur区，所以这个时候直接扫描sur区非常高效，扫描sur区到老年代的引用。<strong>这个时候要注意，如果这个阶段eden区满了，是不会发生ygc的，必须等这个阶段结束才行</strong></li>
+<li>并发标记，寻找整个堆存活的对象，这个阶段可以被ygc打断</li>
+<li>重新标记（stw），完成最后的存活对象标记，使用了SATB（快照）算法。</li>
+<li>清理（stw）<ul>
+<li>整理堆分区，为<strong>混合收集周期识别回收收益高</strong>(基于释放空间和暂停目标)的老年代分区集合；</li>
+<li><strong>这个阶段会收集完全空闲的区块，也就是不包括任何存活对象的区块</strong></li>
+</ul>
+</li>
+</ol>
+<h3 id="混合垃圾收集期"><a href="#混合垃圾收集期" class="headerlink" title="混合垃圾收集期"></a>混合垃圾收集期</h3><p>不仅进行<strong>ygc</strong>，而且根据<strong>预设的暂停时间</strong>和回收收益进行，将之前并发标记周期中标记的区块加入Cset，直到所有的CSet中的区块被收集。然后<strong>再次进入</strong>并发标记周期。</p>
+<h3 id="fullgc"><a href="#fullgc" class="headerlink" title="fullgc"></a>fullgc</h3><p>出现的情况跟CMS一样</p>
+<p>ygc时担保失败</p>
+<p>大对象进入老年代失败</p>
+<h3 id="与CMS的对比"><a href="#与CMS的对比" class="headerlink" title="与CMS的对比"></a>与CMS的对比</h3><ol>
+<li>由于把三块内存变成了几百块内存，内存块的粒度变小了，从而可以垃圾回收工作更彻底的并行化。</li>
+<li>G1的另一个显著特点他能够让用户设置应用的暂停时间，在mixgc的时候，是选择并发收集周期中标记的收益度高的模块进入CSet，所以这个时候可控。</li>
+<li>由于内存块比较小（这里主要是考虑老年代的内存碎片问题，因为CMS的老年代是一整大块，所以当标记整理完之后内存碎片的问题格外严重，如果启动内存压缩，那么就会影响性能，但是G1的分块化可以使这个内存碎片的问题降低到最小），进行内存压缩整理的代价都比较小。</li>
+</ol>
+<p><a href="https://blog.csdn.net/coderlius/article/details/79272773" target="_blank" rel="noopener">https://blog.csdn.net/coderlius/article/details/79272773</a></p>
+<p><a href="https://www.jianshu.com/p/aef0f4765098" target="_blank" rel="noopener">https://www.jianshu.com/p/aef0f4765098</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/G1/" rel="tag"># G1</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/12/%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF/" rel="next" title="学习之路">
+                <i class="fa fa-chevron-left"></i> 学习之路
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/01/31/%E5%85%B3%E4%BA%8EJava%E4%B8%AD%E7%9A%84%E9%94%81/" rel="prev" title="关于Java中的锁">
+                关于Java中的锁 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">AppleLiang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#G1垃圾收集器"><span class="nav-number">1.</span> <span class="nav-text">G1垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#G1堆内存的分布"><span class="nav-number">1.1.</span> <span class="nav-text">G1堆内存的分布</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Remember-Set"><span class="nav-number">1.2.</span> <span class="nav-text">Remember Set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Collection-Set"><span class="nav-number">1.3.</span> <span class="nav-text">Collection Set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#年轻代收集"><span class="nav-number">1.4.</span> <span class="nav-text">年轻代收集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）"><span class="nav-number">1.5.</span> <span class="nav-text">并发标记周期（oldgc，最好理解成垃圾定位工作，因为只负责很小一块的收集）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#混合垃圾收集期"><span class="nav-number">1.6.</span> <span class="nav-text">混合垃圾收集期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fullgc"><span class="nav-number">1.7.</span> <span class="nav-text">fullgc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与CMS的对比"><span class="nav-number">1.8.</span> <span class="nav-text">与CMS的对比</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AppleLiang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

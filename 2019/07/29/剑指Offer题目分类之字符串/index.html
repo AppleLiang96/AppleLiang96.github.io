@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="剑指Offer,算法," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="字符串：面试题5：替换空格请实现一个函数，把字符串中的每个空格替换成&amp;quot;%20&amp;quot;。 你可以假定输入字符串的长度最大是1000。注意输出字符串的长度可能大于1000。 样例输入：&amp;quot;We are happy.&amp;quot;输出：&amp;quot;We%20are%20happy.&amp;quot;  我的思路首先判断这个字符串有几个空格，然后再他后面+空格数量*3个字符位置，然后用双指针">
+<meta name="keywords" content="剑指Offer,算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="剑指Offer题目分类之字符串">
+<meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;07&#x2F;29&#x2F;%E5%89%91%E6%8C%87Offer%E9%A2%98%E7%9B%AE%E5%88%86%E7%B1%BB%E4%B9%8B%E5%AD%97%E7%AC%A6%E4%B8%B2&#x2F;index.html">
+<meta property="og:site_name" content="Have a nice day">
+<meta property="og:description" content="字符串：面试题5：替换空格请实现一个函数，把字符串中的每个空格替换成&amp;quot;%20&amp;quot;。 你可以假定输入字符串的长度最大是1000。注意输出字符串的长度可能大于1000。 样例输入：&amp;quot;We are happy.&amp;quot;输出：&amp;quot;We%20are%20happy.&amp;quot;  我的思路首先判断这个字符串有几个空格，然后再他后面+空格数量*3个字符位置，然后用双指针">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-08-08T02:54:28.146Z">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://liangjiacheng.cn/2019/07/29/剑指Offer题目分类之字符串/"/>
+
+
+
+
+
+  <title>剑指Offer题目分类之字符串 | Have a nice day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Have a nice day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2019/07/29/%E5%89%91%E6%8C%87Offer%E9%A2%98%E7%9B%AE%E5%88%86%E7%B1%BB%E4%B9%8B%E5%AD%97%E7%AC%A6%E4%B8%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AppleLiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Have a nice day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">剑指Offer题目分类之字符串</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-29T15:24:03+08:00">
+                2019-07-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%91%E6%8C%87Offer/" itemprop="url" rel="index">
+                    <span itemprop="name">剑指Offer</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="字符串："><a href="#字符串：" class="headerlink" title="字符串："></a>字符串：</h2><h3 id="面试题5：替换空格"><a href="#面试题5：替换空格" class="headerlink" title="面试题5：替换空格"></a>面试题5：替换空格</h3><p>请实现一个函数，把字符串中的每个空格替换成<code>&quot;%20&quot;</code>。</p>
+<p>你可以假定输入字符串的长度最大是1000。<br>注意输出字符串的长度可能大于1000。</p>
+<h4 id="样例"><a href="#样例" class="headerlink" title="样例"></a>样例</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">输入：&quot;We are happy.&quot;</span></pre></td></tr><tr><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="code"><pre><span class="line">输出：&quot;We%20are%20happy.&quot;</span></pre></td></tr></table></figure>
+
+<h4 id="我的思路"><a href="#我的思路" class="headerlink" title="我的思路"></a>我的思路</h4><p>首先判断这个字符串有几个空格，然后再他后面+空格数量*3个字符位置，然后用双指针，一个指针指向末尾，一个指针从有字符的最后一个index开始往前走。如果碰到空格，就在后面的指针就加上%20。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">replaceSpaces</span><span class="params">(StringBuffer str)</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">if</span> (str==<span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">int</span> before = str.length()-<span class="number">1</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">int</span> blankNum = str.length() - str.toString().replace(<span class="string">" "</span>,<span class="string">""</span>).length();</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; blankNum*<span class="number">2</span>; i++) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        str.append(<span class="string">" "</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">int</span> after = str.length()-<span class="number">1</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">char</span>[] chars = str.toString().toCharArray();</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">while</span> (before&gt;=<span class="number">0</span>)&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">if</span> (chars[before]!=<span class="string">' '</span>)&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            chars[after] = chars[before];</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;<span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            chars[after--] = <span class="string">'0'</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            chars[after--] = <span class="string">'2'</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            chars[after] = <span class="string">'%'</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        before--;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        after--;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">return</span> String.valueOf(chars);</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<h3 id="面试题17：打印从1到最大的n位数"><a href="#面试题17：打印从1到最大的n位数" class="headerlink" title="面试题17：打印从1到最大的n位数"></a>面试题17：打印从1到最大的n位数</h3><p>输入数字n，按顺序打印出从1到最大的n位十进制数。比如输入3，则打印出1、2、3一直到最大的3位数即999。</p>
+<h4 id="我的思路-1"><a href="#我的思路-1" class="headerlink" title="我的思路"></a>我的思路</h4><p>找出最大的n位数 然后循环</p>
+<h3 id="面试题20：表示数值的字符串"><a href="#面试题20：表示数值的字符串" class="headerlink" title="面试题20：表示数值的字符串"></a>面试题20：表示数值的字符串</h3><h3 id="面试题38：字符串的排列"><a href="#面试题38：字符串的排列" class="headerlink" title="面试题38：字符串的排列"></a>面试题38：字符串的排列</h3><p>输入一个字符串,按字典序打印出该字符串中字符的所有排列。例如输入字符串abc,则打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。</p>
+<h5 id="输入描述"><a href="#输入描述" class="headerlink" title="输入描述:"></a><strong>输入描述:</strong></h5><p>输入一个字符串,长度不超过9(可能有字符重复),字符只包括大小写字母。</p>
+<h4 id="我的思路-2"><a href="#我的思路-2" class="headerlink" title="我的思路"></a>我的思路</h4><p>首先通过一个全局变量来保存，用递归来实现，思想就是用后面的元素一直替换当前index的，首先是第一个位置，如果是abc的话，那么第一个位置有三种情况，a，b，c。然后第二个位置同理</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ArrayList&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span></pre></td></tr><tr><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> ArrayList&lt;String&gt; <span class="title">Permutation</span><span class="params">(String str)</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">if</span> (str!=<span class="keyword">null</span>&amp;&amp;str.length()&gt;<span class="number">0</span>)&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        PermutationHelper(str.toCharArray(), <span class="number">0</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">if</span> (list.size()==<span class="number">0</span>)&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            list.add(str);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    Collections.sort(list);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">return</span> list;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">PermutationHelper</span><span class="params">(<span class="keyword">char</span>[] chars, <span class="keyword">int</span> i)</span></span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">if</span> (i==chars.length-<span class="number">1</span>&amp;&amp;!list.contains(String.valueOf(chars)))&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        list.add(String.valueOf(chars));</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;<span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = i; j &lt; chars.length; j++) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            swap(chars,i,j);</span></pre></td></tr><tr><td class="code"><pre><span class="line">            PermutationHelper(chars,i+<span class="number">1</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">            swap(chars,j,i);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+
+
+<h3 id="面试题43：1-n整数中1出现的次数"><a href="#面试题43：1-n整数中1出现的次数" class="headerlink" title="面试题43：1~n整数中1出现的次数"></a>面试题43：1~n整数中1出现的次数</h3><p>输入一个整数n，求从1到n这n个整数的十进制表示中1出现的次数。</p>
+<p>例如输入12，从1到12这些整数中包含“1”的数字有1，10，11和12，其中“1”一共出现了5次。</p>
+<h4 id="样例-1"><a href="#样例-1" class="headerlink" title="样例"></a>样例</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">输入： 12</span></pre></td></tr><tr><td class="code"><pre><span class="line">输出： 5</span></pre></td></tr></table></figure>
+
+<h4 id="我的思路-3"><a href="#我的思路-3" class="headerlink" title="我的思路"></a>我的思路</h4><p>首先还是得看</p>
+<h3 id="面试题44：数字序列中某一位的数字"><a href="#面试题44：数字序列中某一位的数字" class="headerlink" title="面试题44：数字序列中某一位的数字"></a>面试题44：数字序列中某一位的数字</h3><p>面试题45：把数组排成最小的数<br>面试题58：反转字符串 </p>
+<p>面试题67：把字符串转换成整数</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E5%89%91%E6%8C%87Offer/" rel="tag"># 剑指Offer</a>
+          
+            <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/28/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E5%88%86%E6%89%8B%E5%AD%A6%E4%B9%A0/" rel="next" title="TCP三次握手四次分手学习">
+                <i class="fa fa-chevron-left"></i> TCP三次握手四次分手学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/29/%E5%89%91%E6%8C%87Offer%E9%A2%98%E7%9B%AE%E5%88%86%E7%B1%BB/" rel="prev" title="剑指Offer题目分类之数组">
+                剑指Offer题目分类之数组 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">AppleLiang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#字符串："><span class="nav-number">1.</span> <span class="nav-text">字符串：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#面试题5：替换空格"><span class="nav-number">1.1.</span> <span class="nav-text">面试题5：替换空格</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#样例"><span class="nav-number">1.1.1.</span> <span class="nav-text">样例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#我的思路"><span class="nav-number">1.1.2.</span> <span class="nav-text">我的思路</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#面试题17：打印从1到最大的n位数"><span class="nav-number">1.2.</span> <span class="nav-text">面试题17：打印从1到最大的n位数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#我的思路-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">我的思路</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#面试题20：表示数值的字符串"><span class="nav-number">1.3.</span> <span class="nav-text">面试题20：表示数值的字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#面试题38：字符串的排列"><span class="nav-number">1.4.</span> <span class="nav-text">面试题38：字符串的排列</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#输入描述"><span class="nav-number">1.4.0.1.</span> <span class="nav-text">输入描述:</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#我的思路-2"><span class="nav-number">1.4.1.</span> <span class="nav-text">我的思路</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#面试题43：1-n整数中1出现的次数"><span class="nav-number">1.5.</span> <span class="nav-text">面试题43：1~n整数中1出现的次数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#样例-1"><span class="nav-number">1.5.1.</span> <span class="nav-text">样例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#我的思路-3"><span class="nav-number">1.5.2.</span> <span class="nav-text">我的思路</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#面试题44：数字序列中某一位的数字"><span class="nav-number">1.6.</span> <span class="nav-text">面试题44：数字序列中某一位的数字</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AppleLiang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

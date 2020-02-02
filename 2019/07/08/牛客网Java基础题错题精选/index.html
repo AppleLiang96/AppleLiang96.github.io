@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JavaSE,基础," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="异常类  都是Throwable的子类：   Exception（异常） :是程序本身可以处理的异常。  Error（错误）: 是程序无法处理的错误。这些错误表示故障发生于虚拟机自身、或者发生在虚拟机试图执行应用时，一般不需要程序处理。 检查异常（这是程序员需要处理的东西）（编译器要求必须处置的异常） ：  除了Error，RuntimeException及其子类以外，其他的Exception类及">
+<meta name="keywords" content="JavaSE,基础">
+<meta property="og:type" content="article">
+<meta property="og:title" content="牛客网Java基础题错题精选">
+<meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;07&#x2F;08&#x2F;%E7%89%9B%E5%AE%A2%E7%BD%91Java%E5%9F%BA%E7%A1%80%E9%A2%98%E9%94%99%E9%A2%98%E7%B2%BE%E9%80%89&#x2F;index.html">
+<meta property="og:site_name" content="Have a nice day">
+<meta property="og:description" content="异常类  都是Throwable的子类：   Exception（异常） :是程序本身可以处理的异常。  Error（错误）: 是程序无法处理的错误。这些错误表示故障发生于虚拟机自身、或者发生在虚拟机试图执行应用时，一般不需要程序处理。 检查异常（这是程序员需要处理的东西）（编译器要求必须处置的异常） ：  除了Error，RuntimeException及其子类以外，其他的Exception类及">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https:&#x2F;&#x2F;uploadfiles.nowcoder.com&#x2F;images&#x2F;20180701&#x2F;3807435_1530425536125_D49BCBCCF82CF58C566E12F1E3130070">
+<meta property="og:image" content="https:&#x2F;&#x2F;uploadfiles.nowcoder.com&#x2F;images&#x2F;20180813&#x2F;3414430_1534163213978_1901F0F5D964AA28ED2EC9CBCE07787B">
+<meta property="og:updated_time" content="2019-07-14T08:35:25.694Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;uploadfiles.nowcoder.com&#x2F;images&#x2F;20180701&#x2F;3807435_1530425536125_D49BCBCCF82CF58C566E12F1E3130070">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://liangjiacheng.cn/2019/07/08/牛客网Java基础题错题精选/"/>
+
+
+
+
+
+  <title>牛客网Java基础题错题精选 | Have a nice day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Have a nice day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2019/07/08/%E7%89%9B%E5%AE%A2%E7%BD%91Java%E5%9F%BA%E7%A1%80%E9%A2%98%E9%94%99%E9%A2%98%E7%B2%BE%E9%80%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AppleLiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Have a nice day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">牛客网Java基础题错题精选</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-08T20:18:02+08:00">
+                2019-07-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index">
+                    <span itemprop="name">基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="异常类"><a href="#异常类" class="headerlink" title="异常类"></a>异常类</h4>
+
+<p>都是Throwable的子类： </p>
+<ol>
+<li>Exception（异常） :是程序本身可以处理的异常。 </li>
+<li>Error（错误）: 是程序无法处理的错误。这些错误表示故障发生于虚拟机自身、或者发生在虚拟机试图执行应用时，一般不需要程序处理。</li>
+<li><strong>检查异常（这是程序员需要处理的东西）</strong>（编译器要求必须处置的异常） ：  除了Error，<strong>RuntimeException</strong>及其子类以外，其他的Exception类及其子类都属于可查异常。这种异常的特点是Java编译器会检查它，也就是说，当程序中可能出现这类异常，要么用try-catch语句捕获它，要么用throws子句声明抛出它，否则编译不会通过。</li>
+<li>非检查异常(编译器不要求处置的异常): 包括运行时异常（RuntimeException与其子类）和错误（Error）</li>
+</ol>
+<p>​    <a id="more"></a></p>
+<h4 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h4><p>java支持的语言类型分为：<strong>基本类型（就八种）和引用类型</strong>。<br>基本类型包括boolean类型和数值类型，数值类型分为整型和浮点类型，整型包括：byte、short、int、long、char，浮点类型包括float和double。<br>引用类型包括类、接口和<strong>数组</strong><br>Byte和Float属于基本类型的<strong>包装类型，属于引用类型</strong>。</p>
+<h4 id="内部类"><a href="#内部类" class="headerlink" title="内部类"></a>内部类</h4><ol>
+<li>成员内部类</li>
+<li>局部内部类</li>
+<li>静态内部类</li>
+<li>匿名内部类</li>
+</ol>
+<h5 id="内部类的使用场景："><a href="#内部类的使用场景：" class="headerlink" title="内部类的使用场景："></a>内部类的使用场景：</h5><ol>
+<li><p>当某个类除了他的外部类，不再被其他的类使用的时候。比方说hashmap中的Node类，AQS中的Node类，数据库连接池中的PoolConn内部类。这些类都有个特征，就是<strong>内部类绝对不会被其他地方所使用</strong>，只会被外部类所使用的。</p>
+</li>
+<li><p>解决一些非面向对象的语句块。如ifelse语句块，case语句，这些语句都不是面向对象的。再举个例子，JDBC的数据库连接池中，我们常常使用try catch finally的形式来编写代码。在try语句中执行业务逻辑增删改查，在catch语句块中执行<strong>异常捕捉和事务回滚</strong>，在finally语句中<strong>释放资源</strong>。而除了查询之外的方法几乎都要<strong>写同样的catch语句和finally语句</strong>，这时候我们就可以使用<strong>匿名内部类</strong>的形式来实现。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//首先定义一个接口，让用户来重写这个接口实现自己的业务逻辑</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">DataManager</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="class"></span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">manageData</span><span class="params">()</span></span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125; </span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="comment">//再来使用一个类，来实现catch和finally</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataTemplate</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="class">    </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//这里需要用户传入自己的接口</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(DataManager dm)</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function">        </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">               <span class="keyword">try</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">               &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">                   <span class="comment">//调用接口   </span></span></pre></td></tr><tr><td class="code"><pre><span class="line">                   dm.manageData();</span></pre></td></tr><tr><td class="code"><pre><span class="line">			&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">			<span class="keyword">catch</span>(Exception e)</span></pre></td></tr><tr><td class="code"><pre><span class="line">			&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">				<span class="comment">//异常捕捉</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"> </span></pre></td></tr><tr><td class="code"><pre><span class="line">			&#125;<span class="keyword">finally</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">			&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">                   <span class="comment">//释放资源</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">			&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">		&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="comment">//用户使用的时候是这样的</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> DataTemplate().execute(<span class="keyword">new</span> DataManager()&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">manageData</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function">        </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="comment">//业务逻辑</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">        ｝</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;);</span></pre></td></tr></table></figure>
+
+<p>经过这一波操作后，我们就可以看到，try…catch块就省的程序员写了。</p>
+</li>
+<li><p>对第二种思路进行延伸，就是当我们一个程序的同样一部分的代码我们可以使用匿名内部类的方式来实现，给一个接口让程序员自己编写业务逻辑，剩下相同的事情抽离出来写成一个独立的类。比如：再某一段话后执行的一系列相同的操作，如日志记录，流的关闭等。类似于动态代理所需要完成的工作。</p>
+</li>
+<li><p>todo<a href="https://blog.csdn.net/hivon/article/details/606312" target="_blank" rel="noopener">https://blog.csdn.net/hivon/article/details/606312</a></p>
+<p><img src="https://uploadfiles.nowcoder.com/images/20180701/3807435_1530425536125_D49BCBCCF82CF58C566E12F1E3130070" alt="img"></p>
+</li>
+</ol>
+<h4 id="String类型的-比较"><a href="#String类型的-比较" class="headerlink" title="String类型的==比较"></a>String类型的==比较</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String a = <span class="string">"a"</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">String b = <span class="string">"b"</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">System.out.println( <span class="string">"a"</span>+<span class="string">"b"</span>== <span class="string">"ab"</span> )<span class="comment">//true</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="comment">//java对String的相加是通过StringBuffer实现的，先构造一个StringBuffer里面存放"tao"，然后调用append()方法追加"bao"，然后将值为"taobao"的StringBuffer转化成String对象。</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">System.out.println( a+b== <span class="string">"ab"</span> )<span class="comment">//false</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="comment">//intern() 方法会先检查 String 池 ( 或者说成栈内存 ) 中是否存在相同的字符串常量，如果有就返回。</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">System.out.println( (a+b).intern()== <span class="string">"ab"</span> )<span class="comment">//true    </span></span></pre></td></tr><tr><td class="code"><pre><span class="line">=========================================</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="comment">//如果把变量定义为final类型的编译器也会优化成"a"+"b"</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> String a = <span class="string">"a"</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> String b = <span class="string">"b"</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">System.out.println( a+b== <span class="string">"ab"</span> )<span class="comment">//true</span></span></pre></td></tr></table></figure>
+
+
+
+<h4 id="byte和short类型转换问题"><a href="#byte和short类型转换问题" class="headerlink" title="byte和short类型转换问题"></a>byte和short类型转换问题</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">byte</span> a1 = <span class="number">2</span>, a2 = <span class="number">4</span>, a3;</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="keyword">short</span> s = <span class="number">16</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="comment">//byte，short，char是同级别类型  不能自动转换</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">a2 = s;</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="comment">//注：如果被标记为final类型  则不会自动提升</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="comment">//java中如果碰到char，byte，short参与运算，会自动把这些类型转化为int再做运算。进行+、-、*、/的时候都会转成int型进行运算。但是+=、-=、*=、/=不会转成int后运算，而是直接运算。</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">a3 = a1 * a2;</span></pre></td></tr></table></figure>
+
+
+
+<h4 id="final修饰符"><a href="#final修饰符" class="headerlink" title="final修饰符"></a>final修饰符</h4><p>final 变量：</p>
+<p>final 变量能被显式地初始化并且只能初始化一次。被声明为 final 的对象的<strong>引用不能指向不同的对象</strong>。但是 final 对象里<strong>的数据可以被改变</strong>。也就是说 final 对象的引用不能改变，但是里面的值可以改变。</p>
+<p>final 修饰符通常和 static 修饰符一起使用来<strong>创建类常量。</strong><br>final 方法<br>类中的 final 方法<strong>可以被</strong>子类继承，但是<strong>不能被</strong>子类修改。</p>
+<p>声明 final 方法的主要目的是防止该方法的内容被修改。</p>
+<p>如下所示，使用 final 修饰符声明方法。</p>
+<p>final 类<br>final 类<strong>不能被继承</strong>，没有类能够继承 final 类的任何特性。</p>
+<h4 id="接口和抽象类的异同"><a href="#接口和抽象类的异同" class="headerlink" title="接口和抽象类的异同"></a>接口和抽象类的异同</h4><p>接口（interface）可以说成是抽象类的一种特例，接口中的所有方法都必须是抽象的。接口中的方法定义默认为<strong>public abstract类型</strong>，接口中的成员变量类型<strong>默认为public static final</strong>。另外，接口和抽象类在方法上有区别：    </p>
+<ol>
+<li>抽象类可以有构造方法，接口中不能有构造方法。  </li>
+<li>(JDK1.7成立)抽象类中可以包含非抽象的普通方法，接口中的所有方法必须都是抽象的，不能有非抽象的普通方法。<strong>Java 8里的接口可以有default方法</strong></li>
+<li>抽象类中可以有普通成员变量，接口中没有普通成员变量 </li>
+<li>抽象类中的抽象方法的访问类型可以是public，protected和默认类型</li>
+<li>抽象类中可以包含静态方法，接口中不能包含静态方法</li>
+<li>抽象类和接口中都可以包含静态成员变量，抽象类中的静态成员变量的访问类型可以任意，但接口中定义的变量只能是public   static final类型，并且默认即为public static final类型  </li>
+<li>一个类可以实现多个接口，但只能继承一个抽象类。</li>
+</ol>
+<h4 id="变量的内存存放"><a href="#变量的内存存放" class="headerlink" title="变量的内存存放"></a>变量的内存存放</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//类的成员变量  放在堆中</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">private</span> String a = “aa”;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">methodB</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="comment">//方法中的局部变量  存放在栈帧中</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">        String b = “bb”;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="comment">//方法中的局部变量  存放在栈帧中</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">final</span> String c = “cc”;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+
+
+<p>方法的引用传递与值传递的问题</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">foo</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String sgf[])</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">		</span></pre></td></tr><tr><td class="code"><pre><span class="line">        StringBuffer a=<span class="keyword">new</span> StringBuffer(“A”);</span></pre></td></tr><tr><td class="code"><pre><span class="line">		</span></pre></td></tr><tr><td class="code"><pre><span class="line">        StringBuffer b=<span class="keyword">new</span> StringBuffer(“B”);</span></pre></td></tr><tr><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="code"><pre><span class="line">        operate(a,b);</span></pre></td></tr><tr><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="code"><pre><span class="line">        System.out.println(a+”.”+b);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">operate</span><span class="params">(StringBuffer x,StringBuffer y)</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        x.append(y);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        y=x;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p>这题完美解释了Java的值传递特性，传递的只是对象的地址，而非对象本身。</p>
+
+
+<p><strong>传入的y只是对象B的地址，所以，当修改了y的地址指向之后，B并没有改变，而b指向的还是B，只是y这个局部变量改变了地址而已。</strong></p>
+<h4 id="变量的强制转换"><a href="#变量的强制转换" class="headerlink" title="变量的强制转换"></a>变量的强制转换</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span></span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　<span class="function"><span class="keyword">float</span> <span class="title">func0</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function">　　</span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　　　<span class="keyword">byte</span> i=<span class="number">1</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　　　<span class="keyword">return</span> i;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//没有返回值，错误</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">　　<span class="function"><span class="keyword">float</span> <span class="title">func1</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function">　　</span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　　　<span class="keyword">int</span> i=<span class="number">1</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　　　<span class="keyword">return</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　<span class="function"><span class="keyword">float</span> <span class="title">func2</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function">　　</span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　　　<span class="keyword">short</span> i=<span class="number">2</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　　　<span class="keyword">return</span> i;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//正确，注意这里 long虽然8字节但是他还是比4字节float类型低，因为浮点数的存法不一样</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">　　<span class="function"><span class="keyword">float</span> <span class="title">func3</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function">　　</span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　　　<span class="keyword">long</span> i=<span class="number">3</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　　　<span class="keyword">return</span> i;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//错误，double到float是属于向下转，一定要有强转符号</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//低 ---------------------------------------------&gt; 高 </span></span></pre></td></tr><tr><td class="code"><pre><span class="line">	<span class="comment">//byte,short,char-&gt; int -&gt; long -&gt; float -&gt; double</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">　　<span class="function"><span class="keyword">float</span> <span class="title">func4</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function">　　</span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　　　<span class="keyword">double</span> i=<span class="number">4</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　　　<span class="keyword">return</span> i;</span></pre></td></tr><tr><td class="code"><pre><span class="line">　　&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+
+
+<h4 id="继承方法的细节"><a href="#继承方法的细节" class="headerlink" title="继承方法的细节"></a>继承方法的细节</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span> </span>&#123;  </span></pre></td></tr><tr><td class="code"><pre><span class="line">     <span class="function"><span class="keyword">public</span> <span class="title">Base</span> <span class="params">()</span></span>&#123; </span></pre></td></tr><tr><td class="code"><pre><span class="line">     <span class="comment">//... </span></span></pre></td></tr><tr><td class="code"><pre><span class="line">     &#125;  </span></pre></td></tr><tr><td class="code"><pre><span class="line">     <span class="function"><span class="keyword">public</span> <span class="title">Base</span> <span class="params">( <span class="keyword">int</span> m )</span></span>&#123; </span></pre></td></tr><tr><td class="code"><pre><span class="line">     <span class="comment">//... </span></span></pre></td></tr><tr><td class="code"><pre><span class="line">     &#125;  </span></pre></td></tr><tr><td class="code"><pre><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fun</span><span class="params">( <span class="keyword">int</span> n )</span></span>&#123; </span></pre></td></tr><tr><td class="code"><pre><span class="line">     <span class="comment">//... </span></span></pre></td></tr><tr><td class="code"><pre><span class="line">     &#125; </span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;  </span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Child</span> <span class="keyword">extends</span> <span class="title">Base</span></span>&#123;  </span></pre></td></tr><tr><td class="code"><pre><span class="line"> <span class="comment">// member methods  哪个方法能放入这里？</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fun</span><span class="params">( <span class="keyword">int</span> n )</span></span>&#123; ...&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">fun</span> <span class="params">( <span class="keyword">int</span> n )</span></span>&#123; ... &#125;   </span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">fun</span> <span class="params">( <span class="keyword">int</span> n )</span> </span>&#123; ... &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//只能是public</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fun</span> <span class="params">( <span class="keyword">int</span> n )</span> </span>&#123; ... &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p>本题主要考察方法的重写的两同两小一大原则。</p>
+<p>方法名<strong>相同</strong>，参数类型<strong>相同</strong><br>子类返回类型<strong>小于等于</strong>父类方法返回类型（<strong>可以返回父类方法返回值的子类</strong>，如父类方法的返回值是father，那么子类重写的时候就可以返回son），<br>子类抛出异常<strong>小于等于</strong>父类方法抛出异常，<br>子类访问权限<strong>大于等于</strong>父类方法访问权限。</p>
+<h4 id="访问修饰符"><a href="#访问修饰符" class="headerlink" title="访问修饰符"></a>访问修饰符</h4><p><img src="https://uploadfiles.nowcoder.com/images/20180813/3414430_1534163213978_1901F0F5D964AA28ED2EC9CBCE07787B" alt="img"></p>
+<h4 id="枚举类的初始化"><a href="#枚举类的初始化" class="headerlink" title="枚举类的初始化"></a>枚举类的初始化</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> AccountType</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//枚举类型中的枚举值都会对应调用一次构造函数  </span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    SAVING, FIXED, CURRENT;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//枚举类的构造方法只能是private</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">AccountType</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function">    </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        System.out.println(“It is a account type”);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EnumOne</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="class"></span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[]args)</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function">    </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        System.out.println(AccountType.FIXED);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+
+
+<h4 id="int和Integer的区别"><a href="#int和Integer的区别" class="headerlink" title="int和Integer的区别"></a>int和Integer的区别</h4><p>注意此处不能用int，不然的话java会自动包装，自动调用.valueof方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Integer integer1 = <span class="number">127</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">Integer integer2 = <span class="number">127</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">Integer integer5 = <span class="keyword">new</span> Integer(<span class="number">127</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">Integer integer3 = <span class="number">128</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">Integer integer4 = <span class="number">128</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> int1 = <span class="number">127</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> int2 = <span class="number">127</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> int3 = <span class="number">128</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> int4 = <span class="number">128</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">System.out.println(integer1==integer2);<span class="comment">//true</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">System.out.println(integer1==integer3);<span class="comment">//false</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">System.out.println(integer3==integer4);<span class="comment">//false</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">System.out.println(int1==int2);<span class="comment">//true</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">System.out.println(int3==int4);<span class="comment">//true</span></span></pre></td></tr></table></figure>
+
+<p>几条结论：</p>
+<ol>
+<li>int和int之间用==比较，<strong>肯定为true</strong>。基本数据类型没有equals方法</li>
+<li>int和Integer比较，Integer会<strong>自动拆箱</strong>，== 和 equals都<strong>肯定为true</strong></li>
+<li>Integer和Integer比较的时候，由于直接赋值的话会进行自动的装箱。所以当值在[-128,127]中的时候，由于值缓存在IntegerCache中，那么当赋值在这个区间的时候，不会创建新的Integer对象，而是直接从缓存中获取已经创建好的Integer对象。而当大于这个区间的时候，会直接new Integer。 </li>
+<li>Integer和new Integer ： <strong>new Integer会创建对象</strong>，存储在<strong>堆</strong>中。而Integer在[-128,127]中，从缓存中取，否则会new Integer. 所以 Integer和new Integer 进行==比较的话，<strong>肯定为false</strong> ; Integer和new Integer 进行equals比较的话，肯定为true</li>
+<li>new Integer和new Integer进行==比较的时候，<strong>肯定为false</strong> ; 进行equals比较的时候，肯定为true 。原因是new的时候，会在堆中创建对象，分配的地址不同，==比较的是内存地址，所以肯定不同</li>
+</ol>
+<h4 id="i-i-问题"><a href="#i-i-问题" class="headerlink" title="i=i++问题"></a>i=i++问题</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Inc</span> </span>&#123; </span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123; </span></pre></td></tr><tr><td class="code"><pre><span class="line">       Inc inc = <span class="keyword">new</span> Inc(); </span></pre></td></tr><tr><td class="code"><pre><span class="line">       <span class="keyword">int</span> i = <span class="number">0</span>; </span></pre></td></tr><tr><td class="code"><pre><span class="line">       inc.fermin(i); </span></pre></td></tr><tr><td class="code"><pre><span class="line">       i= i ++; </span></pre></td></tr><tr><td class="code"><pre><span class="line">       System.out.println(i);<span class="comment">//输出0</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    </span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125; </span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">fermin</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123; </span></pre></td></tr><tr><td class="code"><pre><span class="line">       i++; </span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125; </span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p>i=i++;等同于：<br>temp=i； (等号右边的i)<br>i=i+1;      (等号右边的i)<br>i=temp;   (等号左边的i)<br>而i=++i;则等同于：<br>i=i+1;<br>temp=i;<br>i=temp;</p>
+<h4 id="静态代码块和静态变量得执行顺序"><a href="#静态代码块和静态变量得执行顺序" class="headerlink" title="静态代码块和静态变量得执行顺序"></a>静态代码块和静态变量得执行顺序</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="class"></span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//静态变量和静态代码块按照顺序执行，这里先执行静态变量，然后执行构造块，最后执行静态代码块</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//如果把静态代码块放在上面  就会输出BAA 因为静态代码块先执行</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Test t1 = <span class="keyword">new</span> Test();</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">         System.out.println(<span class="string">"blockA"</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">static</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        System.out.println(<span class="string">"blockB"</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="function">    </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        Test t2 = <span class="keyword">new</span> Test();<span class="comment">//输出blockAblockBblockA</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line"> &#125;</span></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>Reference:</p>
+<p>幕后英雄的用武之地——浅谈Java内部类的四个应用场景<a href="https://blog.csdn.net/hivon/article/details/606312" target="_blank" rel="noopener">https://blog.csdn.net/hivon/article/details/606312</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaSE/" rel="tag"># JavaSE</a>
+          
+            <a href="/tags/%E5%9F%BA%E7%A1%80/" rel="tag"># 基础</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/07/J.U.C%E5%8C%85%E4%B8%AD%E7%9A%84AQS%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="next" title="J.U.C包中的AQS源码学习">
+                <i class="fa fa-chevron-left"></i> J.U.C包中的AQS源码学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/10/J-U-C%E5%8C%85%E4%B8%AD%E7%9A%84Condition%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="prev" title="J.U.C包中的Condition源码学习">
+                J.U.C包中的Condition源码学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">AppleLiang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#异常类"><span class="nav-number">1.</span> <span class="nav-text">异常类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基本数据类型"><span class="nav-number">2.</span> <span class="nav-text">基本数据类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内部类"><span class="nav-number">3.</span> <span class="nav-text">内部类</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#内部类的使用场景："><span class="nav-number">3.1.</span> <span class="nav-text">内部类的使用场景：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#String类型的-比较"><span class="nav-number">4.</span> <span class="nav-text">String类型的==比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#byte和short类型转换问题"><span class="nav-number">5.</span> <span class="nav-text">byte和short类型转换问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#final修饰符"><span class="nav-number">6.</span> <span class="nav-text">final修饰符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#接口和抽象类的异同"><span class="nav-number">7.</span> <span class="nav-text">接口和抽象类的异同</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#变量的内存存放"><span class="nav-number">8.</span> <span class="nav-text">变量的内存存放</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#变量的强制转换"><span class="nav-number">9.</span> <span class="nav-text">变量的强制转换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#继承方法的细节"><span class="nav-number">10.</span> <span class="nav-text">继承方法的细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#访问修饰符"><span class="nav-number">11.</span> <span class="nav-text">访问修饰符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#枚举类的初始化"><span class="nav-number">12.</span> <span class="nav-text">枚举类的初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#int和Integer的区别"><span class="nav-number">13.</span> <span class="nav-text">int和Integer的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#i-i-问题"><span class="nav-number">14.</span> <span class="nav-text">i=i++问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#静态代码块和静态变量得执行顺序"><span class="nav-number">15.</span> <span class="nav-text">静态代码块和静态变量得执行顺序</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AppleLiang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
