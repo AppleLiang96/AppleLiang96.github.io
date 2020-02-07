@@ -79,15 +79,15 @@
 
 
 
-<meta name="description" content="关于Java的“锁”其实不管是Java还是其他语言，锁的概念肯定都是存在。其实就是多个线程去争抢一个资源的概念。看了synchronized和juc中的lock觉得实现机制差不多，所以写下了这篇博客。">
+<meta name="description" content="关于Java的“锁”其实不管是Java还是其他语言，锁的概念肯定都是存在。其实就是多个线程去争抢一个资源的概念。看了synchronized和j.u.c中的lock觉得实现机制差不多。然后再看《操作系统导论》的时候，发现并发那一章全在讲自旋，队列啥的。所以感觉各种语言设计锁的时候思想应该都是差不多的。所以写下了这篇博客。">
 <meta name="keywords" content="锁">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于Java中的锁">
 <meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2020&#x2F;01&#x2F;31&#x2F;%E5%85%B3%E4%BA%8EJava%E4%B8%AD%E7%9A%84%E9%94%81&#x2F;index.html">
 <meta property="og:site_name" content="Have a nice day">
-<meta property="og:description" content="关于Java的“锁”其实不管是Java还是其他语言，锁的概念肯定都是存在。其实就是多个线程去争抢一个资源的概念。看了synchronized和juc中的lock觉得实现机制差不多，所以写下了这篇博客。">
+<meta property="og:description" content="关于Java的“锁”其实不管是Java还是其他语言，锁的概念肯定都是存在。其实就是多个线程去争抢一个资源的概念。看了synchronized和j.u.c中的lock觉得实现机制差不多。然后再看《操作系统导论》的时候，发现并发那一章全在讲自旋，队列啥的。所以感觉各种语言设计锁的时候思想应该都是差不多的。所以写下了这篇博客。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-02-02T08:24:08.172Z">
+<meta property="og:updated_time" content="2020-02-07T07:41:23.310Z">
 <meta name="twitter:card" content="summary">
 
 
@@ -350,7 +350,7 @@
       
 
       
-        <h2 id="关于Java的“锁”"><a href="#关于Java的“锁”" class="headerlink" title="关于Java的“锁”"></a>关于Java的“锁”</h2><p>其实不管是Java还是其他语言，锁的概念肯定都是存在。其实就是多个线程去争抢一个资源的概念。看了synchronized和juc中的lock觉得实现机制差不多，所以写下了这篇博客。</p>
+        <h2 id="关于Java的“锁”"><a href="#关于Java的“锁”" class="headerlink" title="关于Java的“锁”"></a>关于Java的“锁”</h2><p>其实不管是Java还是其他语言，锁的概念肯定都是存在。其实就是多个线程去争抢一个资源的概念。看了synchronized和j.u.c中的lock觉得实现机制差不多。<strong>然后再看《操作系统导论》的时候，发现并发那一章全在讲自旋，队列啥的。所以感觉各种语言设计锁的时候思想应该都是差不多的。</strong>所以写下了这篇博客。</p>
 <a id="more"></a>
 
 <h3 id="锁的概念"><a href="#锁的概念" class="headerlink" title="锁的概念"></a>锁的概念</h3><p>那我们的一个资源可能不是单个的变量。可能是一段程序。所以我们利用“锁”去作为你抢到这个资源的<strong>“证明”</strong>，一般这个“锁”就是一个<strong>标志位</strong>。比方说synchronized<strong>轻量级锁</strong>时利用的<strong>对象头中的ThreadId</strong>，<strong>重量级锁</strong>时利用的 <strong>monitor</strong>对象中的<strong>owner</strong>字段。J.U.C包中AQS利用的<strong>currentThread</strong>等。</p>
