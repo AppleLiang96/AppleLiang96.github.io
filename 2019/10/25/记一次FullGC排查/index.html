@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JVM,FullGC," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="4989应用在一小时内出现了高达60次的fullgc，总时长高达40s，直接导致OOM。首先观察引起fullgc的原因是老年代担保失败还是metaspace溢出。">
+<meta name="keywords" content="JVM,FullGC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次FullGC排查">
+<meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2019&#x2F;10&#x2F;25&#x2F;%E8%AE%B0%E4%B8%80%E6%AC%A1FullGC%E6%8E%92%E6%9F%A5&#x2F;index.html">
+<meta property="og:site_name" content="Have a nice day">
+<meta property="og:description" content="4989应用在一小时内出现了高达60次的fullgc，总时长高达40s，直接导致OOM。首先观察引起fullgc的原因是老年代担保失败还是metaspace溢出。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;wzMHI6LXpVKFRZ7.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;6lsTfO1KFxUVWC8.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;4iku6zs5ZdWjIO9.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;dZVkLwRKjlsHmvA.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;fW1pF9YOUwI5CbE.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;zKHgNnTSuvdIhXt.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;qE7DyAl3wY2XzdZ.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;sk6yQUqrnA2PHV3.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;XBn1fcKxroImh49.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;GEsjJDaH1FUXfIu.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;lhTfX8WzPwsY2nd.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;p2t9QlcBhaT6w1g.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;GdsXO9beY1qHRNU.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;OFsq1z8MKftvLml.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;VAkjlyMuhrJWfem.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;s6G7V3MQkTbP4no.png">
+<meta property="og:updated_time" content="2020-02-08T13:42:36.803Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;08&#x2F;wzMHI6LXpVKFRZ7.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://liangjiacheng.cn/2019/10/25/记一次FullGC排查/"/>
+
+
+
+
+
+  <title>记一次FullGC排查 | Have a nice day</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Have a nice day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2019/10/25/%E8%AE%B0%E4%B8%80%E6%AC%A1FullGC%E6%8E%92%E6%9F%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AppleLiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Have a nice day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">记一次FullGC排查</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-25T21:34:23+08:00">
+                2019-10-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="https://i.loli.net/2020/02/08/wzMHI6LXpVKFRZ7.png" alt="image.png"></p>
+<p>4989应用在一小时内出现了高达<strong>60次的fullgc</strong>，总时长高达40s，直接导致OOM。首先观察引起fullgc的原因是<strong>老年代担保失败还是metaspace溢出。</strong></p>
+<a id="more"></a>
+
+<p><img src="https://i.loli.net/2020/02/08/6lsTfO1KFxUVWC8.png" alt="image.png"></p>
+<p>首先<strong>观察老年代，正常。</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">-Xms5120m -Xmx5120M -Xmn3036m -Xss512k -XX:MetaspaceSize=<span class="number">128</span>m -XX:MaxMetaspaceSize=<span class="number">256</span>m -XX:PermSize=<span class="number">128</span>m -XX:MaxPermSize=<span class="number">256</span>m -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=<span class="number">70</span> -XX:+ScavengeBeforeFullGC -XX:+CMSScavengeBeforeRemark -XX:+PreserveFramePointer -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=<span class="number">5</span> -XX:GCLogFileSize=<span class="number">32</span>M -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/logs/<span class="number">100004989</span></span></pre></td></tr></table></figure>
+
+<p>观察metaspace，这里可以看到<strong>metaspace</strong>在0点后一直在增加到<strong>JVM参数设置的上限</strong>（256MB），导致了fullgc。</p>
+<p><img src="https://i.loli.net/2020/02/08/4iku6zs5ZdWjIO9.png" alt="image.png"></p>
+<p>因为JDK8之后，原JDK7中的永久代分开为字符串常量池和metaspace，所以基本上可以确定是类加载器爆炸导致的OOM，一般来讲是原因是反射导致的动态类的爆炸。</p>
+<p>因为是0点后才出现的，所以应该是有job开始启动，一直在调用4989的接口。观察CAT的访问量统计，果然在0点后访问量大增。</p>
+<p>一般来找metaspace的OOM问题定位是比较快的，因为JVM参数可以设置在OOM后自动保存dump文件，只需要把dump文件下载下来之后，用eclipse的内存检测工具观察metaspace中哪些类加载器最多即可。但是在VI上并没有dump文件，所以只能寻求别的思路。</p>
+<p><strong>10点-11点</strong>调用服务的最多的<strong>几个接口</strong></p>
+<p><img src="https://i.loli.net/2020/02/08/dZVkLwRKjlsHmvA.png" alt="image.png"></p>
+<p><strong>0点到1点</strong>调用服务最多的<strong>几个接口</strong></p>
+<p><img src="https://i.loli.net/2020/02/08/fW1pF9YOUwI5CbE.png" alt="image.png"></p>
+<p>queryresourceproduct</p>
+<p>通过观察该服务0点后被调用的次数，根据metespace增长的时间来判断是照妖镜服务一直在调用这个方法。</p>
+<p>之后去到这个方法的代码中观察</p>
+<p><img src="https://i.loli.net/2020/02/08/zKHgNnTSuvdIhXt.png" alt="image.png"></p>
+<p><img src="https://i.loli.net/2020/02/08/qE7DyAl3wY2XzdZ.png" alt="image.png"></p>
+<p>可以看到这个方法每调用一次，就会生成一个新的实例</p>
+<p><img src="https://i.loli.net/2020/02/08/sk6yQUqrnA2PHV3.png" alt="image.png"></p>
+<p>调用的是这个构造方法</p>
+<p><img src="https://i.loli.net/2020/02/08/XBn1fcKxroImh49.png" alt="image.png"></p>
+<p><img src="https://i.loli.net/2020/02/08/GEsjJDaH1FUXfIu.png" alt="image.png"></p>
+<p>我们可以来测试一下为什么这个方法会导致内存泄漏</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">demo</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">NestClass</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> MapperFactory instance;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">static</span> &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            MappingContextFactory mappingContextFactory = <span class="keyword">new</span> MappingContext.Factory();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            instance = <span class="keyword">new</span> DefaultMapperFactory.Builder()</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .useBuiltinConverters(<span class="keyword">false</span>)</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .mappingContextFactory(mappingContextFactory)</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .build();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="comment">//建立对象映射  如果不是单例的话，就会发生内存泄漏  一直生成代理类</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">            instance.classMap(Student<span class="class">.<span class="keyword">class</span>, <span class="title">StudentDTO</span>.<span class="title">class</span>)</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .field("id","fullId").byDefault().register();</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> MapperFactory <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">return</span> demo.NestClass.instance;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//内存溢出</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="meta">@Test</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fun1</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        Student student = <span class="keyword">new</span> Student();</span></pre></td></tr><tr><td class="code"><pre><span class="line">        student.setAge(<span class="number">10</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        student.setId(<span class="number">10</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        student.setName(<span class="string">"xiaoming"</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            MappingContextFactory mappingContextFactory = <span class="keyword">new</span> MappingContext.Factory();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            MapperFactory mapperFactory = <span class="keyword">new</span> DefaultMapperFactory.Builder()</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .useBuiltinConverters(<span class="keyword">false</span>)</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .mappingContextFactory(mappingContextFactory)</span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .build();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            <span class="comment">//建立对象映射  如果不是单例的话，就会发生内存泄漏  一直生成代理类</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">            mapperFactory.classMap(Student<span class="class">.<span class="keyword">class</span>, <span class="title">StudentDTO</span>.<span class="title">class</span>)</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">                    .field("id","fullId").byDefault().register();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            MapperFacade mapper = mapperFactory.getMapperFacade();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            StudentDTO map = mapper.map(student, StudentDTO<span class="class">.<span class="keyword">class</span>)</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        Thread.sleep(<span class="number">1000000000</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//单例，内存不溢出</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="meta">@Test</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fun2</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        Student student = <span class="keyword">new</span> Student();</span></pre></td></tr><tr><td class="code"><pre><span class="line">        student.setAge(<span class="number">10</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        student.setId(<span class="number">10</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        student.setName(<span class="string">"xiaoming"</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">            MapperFactory instance = demo.getInstance();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            MapperFacade mapper = instance.getMapperFacade();</span></pre></td></tr><tr><td class="code"><pre><span class="line">            StudentDTO map = mapper.map(student, StudentDTO<span class="class">.<span class="keyword">class</span>)</span>;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">        Thread.sleep(<span class="number">1000000000</span>);</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p>使用单例前</p>
+<p><img src="https://i.loli.net/2020/02/08/lhTfX8WzPwsY2nd.png" alt="image.png"></p>
+<p>使用单例后</p>
+<p><img src="https://i.loli.net/2020/02/08/p2t9QlcBhaT6w1g.png" alt="image.png"></p>
+<p><img src="https://i.loli.net/2020/02/08/GdsXO9beY1qHRNU.png" alt="image.png"></p>
+<p><img src="https://i.loli.net/2020/02/08/OFsq1z8MKftvLml.png" alt="image.png"></p>
+<p><img src="https://i.loli.net/2020/02/08/VAkjlyMuhrJWfem.png" alt="image.png"></p>
+<p>修改代码后发生产后，fullgc消失</p>
+<p><img src="https://i.loli.net/2020/02/08/s6G7V3MQkTbP4no.png" alt="image.png"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JVM/" rel="tag"># JVM</a>
+          
+            <a href="/tags/FullGC/" rel="tag"># FullGC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/13/volatile%E5%85%B3%E9%94%AE%E5%AD%97/" rel="next" title="volatile关键字">
+                <i class="fa fa-chevron-left"></i> volatile关键字
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/07/%E9%9D%A2%E8%AF%95%E8%AE%B0%E5%BD%95/" rel="prev" title="面试记录">
+                面试记录 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpeg"
+                alt="AppleLiang" />
+            
+              <p class="site-author-name" itemprop="name">AppleLiang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/AppleLiang96" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.instagram.com/AppleLiang96" target="_blank" title="Instagram">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AppleLiang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
