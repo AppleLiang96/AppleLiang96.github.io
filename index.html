@@ -1136,6 +1136,8 @@
         
           
             <h2 id="对Happens-Before的理解"><a href="#对Happens-Before的理解" class="headerlink" title="对Happens-Before的理解"></a>对Happens-Before的理解</h2><p>最近三刷《并发编程的艺术》这本书，主要对happens-before和final域还有重排序再次理解，之前看的时候有点迷。现在大概写一下对Happens-Before的理解。</p>
+<p>首先为什么要有hp原则？因为现代的处理器的<strong>CPU运行速度极快，内存远远跟不上</strong>，所以为了减少CPU等待内存这种情况的出现，我们给CPU加了些缓存，可以理解成寄存器或者高速缓存。<strong>但是这些寄存器和高速缓存里的数据只对某个核可见</strong>。对其他核心不可见。</p>
+<p>所以这个时候如果涉及到一些共享变量的修改，在多线程的环境下我们就要<strong>保证可见</strong>性。<strong>所以hp原则可以理解成一种可见性的保证。</strong></p>
 <p>其实总结一下hp就四条主要规则。</p>
 <ol>
 <li>一个线程内部是hb的，因为一个线程在一个CPU上执行，<strong>共用一个寄存器</strong>（这里可以理解成JMM中的工作内存），所以肯定不会出现可见性问题。而且有<strong>as-if-serial</strong>（词面意思，仿佛是串行的，其实就是单线程内，在我们程序员来看，各行代码都是按照顺序执行，但是实际上编译器和处理器会对数据没有依赖的代码行进行重排序，但是并不影响结果，因为是单线程的）的保证。</li>
