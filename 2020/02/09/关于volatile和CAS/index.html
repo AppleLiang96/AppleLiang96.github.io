@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="并发," />
 
 
 
@@ -79,12 +79,18 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Have a nice day">
-<meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;archives&#x2F;2019&#x2F;10&#x2F;index.html">
+<meta name="description" content="在并发包中我们经常可以看到CAS与volatile关键字的联合使用。通过对volatile的了解我们可以知道，volatile最终是通过加上lock前缀的形式从而遵守intel的MESI协议从而保证了可见性。 回顾一下lock前缀的用处  确保对内存的读-改-写操作原子执行。 禁止该指令，与之前和之后的读和写指令重排序。（相当于内存屏障） 把写缓冲区中的所有数据刷新到内存中。（相当于内存屏障）">
+<meta name="keywords" content="并发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CAS为什么具有volatile的内存语义？">
+<meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2020&#x2F;02&#x2F;09&#x2F;%E5%85%B3%E4%BA%8Evolatile%E5%92%8CCAS&#x2F;index.html">
 <meta property="og:site_name" content="Have a nice day">
+<meta property="og:description" content="在并发包中我们经常可以看到CAS与volatile关键字的联合使用。通过对volatile的了解我们可以知道，volatile最终是通过加上lock前缀的形式从而遵守intel的MESI协议从而保证了可见性。 回顾一下lock前缀的用处  确保对内存的读-改-写操作原子执行。 禁止该指令，与之前和之后的读和写指令重排序。（相当于内存屏障） 把写缓冲区中的所有数据刷新到内存中。（相当于内存屏障）">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;09&#x2F;l9aP6xJKgkdADyF.png">
+<meta property="og:updated_time" content="2020-02-09T06:39:43.011Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;09&#x2F;l9aP6xJKgkdADyF.png">
 
 
 
@@ -114,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://liangjiacheng.cn/archives/2019/10/"/>
+  <link rel="canonical" href="http://liangjiacheng.cn/2020/02/09/关于volatile和CAS/"/>
 
 
 
 
 
-  <title>归档 | Have a nice day</title>
+  <title>CAS为什么具有volatile的内存语义？ | Have a nice day</title>
   
 
 
@@ -139,7 +145,7 @@
     
   
 
-  <div class="container sidebar-position-left page-archive">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -243,111 +249,194 @@
           <div id="content" class="content">
             
 
+  <div id="posts" class="posts-expand">
+    
+
+  
+
   
   
   
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
-
-      <span class="archive-page-counter">
-        
-        
-        
-          
-        
-        嗯..! 目前共计 26 篇日志。 继续努力。
-      </span>
-
-      
-
-        
-        
-        
-
-        
-          
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2019">2019</h1>
-          </div>
-        
-        
-
-        
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2020/02/09/%E5%85%B3%E4%BA%8Evolatile%E5%92%8CCAS/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AppleLiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Have a nice day">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2019/10/25/%E8%AE%B0%E4%B8%80%E6%AC%A1FullGC%E6%8E%92%E6%9F%A5/" itemprop="url">
-              
-                <span itemprop="name">记一次FullGC排查</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">CAS为什么具有volatile的内存语义？</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-10-25T21:34:23+08:00"
-              content="2019-10-25" >
-          10-25
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-09T14:04:55+08:00">
+                2020-02-09
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B9%B6%E5%8F%91/" itemprop="url" rel="index">
+                    <span itemprop="name">并发</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/02/09/%E5%85%B3%E4%BA%8Evolatile%E5%92%8CCAS/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/02/09/%E5%85%B3%E4%BA%8Evolatile%E5%92%8CCAS/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2019/10/13/volatile%E5%85%B3%E9%94%AE%E5%AD%97/" itemprop="url">
-              
-                <span itemprop="name">volatile关键字</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-10-13T13:25:12+08:00"
-              content="2019-10-13" >
-          10-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
       
 
+      
+        <p>在并发包中我们经常可以看到<strong>CAS与volatile</strong>关键字的联合使用。通过对volatile的了解我们可以知道，volatile最终是通过加上<strong>lock前缀</strong>的形式从而遵守intel的MESI协议从而保证了可见性。</p>
+<p>回顾一下lock前缀的用处</p>
+<ol>
+<li>确保对内存的读-改-写操作原子执行。</li>
+<li>禁止该指令，与之前和之后的读和写指令重排序。（<strong>相当于内存屏障</strong>）</li>
+<li>把写缓冲区中的所有数据刷新到内存中。（<strong>相当于内存屏障</strong>）</li>
+</ol>
+<a id="more"></a>
+
+<h2 id="CAS的底层实现"><a href="#CAS的底层实现" class="headerlink" title="CAS的底层实现"></a>CAS的底层实现</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">boolean</span> <span class="title">compareAndSwapObject</span><span class="params">(Object var1, <span class="keyword">long</span> var2, Object var4, Object var5)</span></span>;</span></pre></td></tr></table></figure>
+
+<p>可以看到是一个native方法，所以应该是通过CPP实现的。</p>
+<p><img src="https://i.loli.net/2020/02/09/l9aP6xJKgkdADyF.png" alt="image.png"></p>
+<p>这里会判断一下当前物理机的CPU是单核还是多核的，如果是单核的就会加上<strong>lock前缀</strong>。</p>
+<p>所以这个时候我们就可以确定，<strong>CAS与volatile具有相同的内存语义</strong>这个结论了。</p>
+<h2 id="CAS的ABA问题？"><a href="#CAS的ABA问题？" class="headerlink" title="CAS的ABA问题？"></a>CAS的ABA问题？</h2><p>其实我觉得这不是CAS的问题，CAS只是一个<strong>底层的操作而已</strong>（类似TCP），我们应当在<strong>应用层</strong>去改进这个问题，而不应该在底层。<strong>CAS原来的语义是不是把一个数A变成一个我们想要的数B，发生ABA问题之后，我们的这个数是不是最终还会被替换成B？所以CAS的任务还是完成了。所以这个时候不能说CAS有问题，而是我们期望他有更多的功能。</strong></p>
+
+      
     </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag"># 并发</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/31/%E5%85%B3%E4%BA%8EJava%E4%B8%AD%E7%9A%84%E9%94%81/" rel="next" title="关于Java中的锁">
+                <i class="fa fa-chevron-left"></i> 关于Java中的锁
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -355,6 +444,13 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -375,8 +471,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -456,6 +561,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#CAS的底层实现"><span class="nav-number">1.</span> <span class="nav-text">CAS的底层实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAS的ABA问题？"><span class="nav-number">2.</span> <span class="nav-text">CAS的ABA问题？</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -598,6 +719,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
