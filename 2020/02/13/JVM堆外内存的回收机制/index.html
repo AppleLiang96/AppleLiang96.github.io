@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="JVM,Netty,对外内存," />
 
 
 
@@ -79,11 +79,15 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Have a nice day">
-<meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;tags&#x2F;FullGC&#x2F;index.html">
+<meta name="description" content="之前在学习JVM的过程中，记得《深入理解JVM》中有一句，Java在NIO包中可以直接操纵堆外内存。最近在学习NIO，学到了一种DirectByteBuffer类，第一次接触到了堆外内存。 为什么要使用堆外内存？其实堆外内存是为了来实现零拷贝技术的。">
+<meta name="keywords" content="JVM,Netty,对外内存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM堆外内存的回收机制">
+<meta property="og:url" content="http:&#x2F;&#x2F;liangjiacheng.cn&#x2F;2020&#x2F;02&#x2F;13&#x2F;JVM%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E7%9A%84%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6&#x2F;index.html">
 <meta property="og:site_name" content="Have a nice day">
+<meta property="og:description" content="之前在学习JVM的过程中，记得《深入理解JVM》中有一句，Java在NIO包中可以直接操纵堆外内存。最近在学习NIO，学到了一种DirectByteBuffer类，第一次接触到了堆外内存。 为什么要使用堆外内存？其实堆外内存是为了来实现零拷贝技术的。">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-02-13T06:11:22.111Z">
 <meta name="twitter:card" content="summary">
 
 
@@ -114,13 +118,13 @@
 
 
 
-  <link rel="canonical" href="http://liangjiacheng.cn/tags/FullGC/"/>
+  <link rel="canonical" href="http://liangjiacheng.cn/2020/02/13/JVM堆外内存的回收机制/"/>
 
 
 
 
 
-  <title>标签: FullGC | Have a nice day</title>
+  <title>JVM堆外内存的回收机制 | Have a nice day</title>
   
 
 
@@ -139,7 +143,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -243,54 +247,184 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>FullGC<small>标签</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://liangjiacheng.cn/2020/02/13/JVM%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E7%9A%84%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="AppleLiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Have a nice day">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2019/10/25/%E8%AE%B0%E4%B8%80%E6%AC%A1FullGC%E6%8E%92%E6%9F%A5/" itemprop="url">
-              
-                <span itemprop="name">记一次FullGC排查</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">JVM堆外内存的回收机制</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-10-25T21:34:23+08:00"
-              content="2019-10-25" >
-          10-25
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-13T14:07:14+08:00">
+                2020-02-13
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/02/13/JVM%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E7%9A%84%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/02/13/JVM%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E7%9A%84%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>之前在学习JVM的过程中，记得《深入理解JVM》中有一句，Java在NIO包中可以直接操纵堆外内存。最近在学习NIO，学到了一种<strong>DirectByteBuffer</strong>类，第一次接触到了堆外内存。</p>
+<h3 id="为什么要使用堆外内存？"><a href="#为什么要使用堆外内存？" class="headerlink" title="为什么要使用堆外内存？"></a>为什么要使用堆外内存？</h3><p>其实堆外内存是为了来实现零拷贝技术的。</p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JVM/" rel="tag"># JVM</a>
+          
+            <a href="/tags/Netty/" rel="tag"># Netty</a>
+          
+            <a href="/tags/%E5%AF%B9%E5%A4%96%E5%86%85%E5%AD%98/" rel="tag"># 对外内存</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/09/%E5%85%B3%E4%BA%8Evolatile%E5%92%8CCAS/" rel="next" title="CAS为什么具有volatile的内存语义？">
+                <i class="fa fa-chevron-left"></i> CAS为什么具有volatile的内存语义？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -298,6 +432,13 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -318,8 +459,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -399,6 +549,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要使用堆外内存？"><span class="nav-number">1.</span> <span class="nav-text">为什么要使用堆外内存？</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -541,6 +707,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
