@@ -88,7 +88,7 @@
 <meta property="og:description" content="之前在学习JVM的过程中，记得《深入理解JVM》中有一句，Java在NIO包中可以直接操纵堆外内存。最近在学习NIO，学到了一种DirectByteBuffer类，第一次接触到了堆外内存。 为什么要使用堆外内存？其实堆外内存是为了来实现零拷贝技术的。因为IO操作要涉及用户态和内核态的多次切换，时间成本比较高，所以Java为了提高速度，采用了内存映射技术（mmap）来实现零拷贝，从而加快IO的速度。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;13&#x2F;Iw1Evd5AOgStXBU.png">
-<meta property="og:updated_time" content="2020-02-13T06:48:22.307Z">
+<meta property="og:updated_time" content="2020-02-13T06:51:57.696Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;i.loli.net&#x2F;2020&#x2F;02&#x2F;13&#x2F;Iw1Evd5AOgStXBU.png">
 
@@ -369,6 +369,8 @@
       
         <p>之前在学习JVM的过程中，记得《深入理解JVM》中有一句，Java在NIO包中可以直接操纵堆外内存。最近在学习NIO，学到了一种<strong>DirectByteBuffer</strong>类，第一次接触到了堆外内存。</p>
 <h3 id="为什么要使用堆外内存？"><a href="#为什么要使用堆外内存？" class="headerlink" title="为什么要使用堆外内存？"></a>为什么要使用堆外内存？</h3><p>其实堆外内存是为了来实现零拷贝技术的。因为IO操作要涉及用户态和内核态的多次切换，时间成本比较高，所以Java为了提高速度，采用了内存映射技术（mmap）来实现零拷贝，从而加快IO的速度。<strong>主要是通过避免IO读取文件到内核态后还要拷贝至用户空间再进行修改的这步</strong>来加快速度的。</p>
+<a id="more"></a>
+
 <p><img src="https://i.loli.net/2020/02/13/Iw1Evd5AOgStXBU.png" alt="image.png"></p>
 <h3 id="为什么内核态不直接操纵Java内存"><a href="#为什么内核态不直接操纵Java内存" class="headerlink" title="为什么内核态不直接操纵Java内存"></a>为什么内核态不直接操纵Java内存</h3><p>引用一下R大在知乎的回答</p>
 <blockquote>
