@@ -367,6 +367,13 @@
 <ol>
 <li><a href="https://liangjiacheng.cn/2020/01/12/%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF/">后端学习之路</a></li>
 </ol>
+<p>狼人杀项目的一些思考（持续更新~）</p>
+<ol>
+<li><a href="https://liangjiacheng.cn/2020/04/16/%E7%8B%BC%E4%BA%BA%E6%9D%80%E6%B8%B8%E6%88%8F%E9%A1%B9%E7%9B%AE%E4%B8%AD%E6%89%80%E8%BF%90%E7%94%A8%E7%9A%84%E5%BB%B6%E8%BF%9F%E6%B6%88%E6%81%AF/">狼人杀游戏项目中所运用的延迟消息</a></li>
+<li>预告：狼人杀游戏架构图。</li>
+<li>预告：狼人杀游戏项目复盘</li>
+<li>预告：狼人杀游戏重构思路</li>
+</ol>
 <p>FullGC排查思路</p>
 <ol>
 <li><a href="https://liangjiacheng.cn/2019/10/25/%E8%AE%B0%E4%B8%80%E6%AC%A1FullGC%E6%8E%92%E6%9F%A5/">记一次FullGC排查</a></li>
@@ -568,73 +575,18 @@
 
       
         
-          
-            <p>最近在给公司做一个狼人杀的手游项目。因为是类似于卡牌类的游戏，这个时候需要考虑的一个问题就是，游戏后端的开发和web开发有什么<strong>不同</strong>。</p>
+          <p>最近在给公司做一个狼人杀的手游项目。因为是类似于卡牌类的游戏，这个时候需要考虑的一个问题就是，游戏后端的开发和web开发有什么<strong>不同</strong>。</p>
 <ul>
 <li>H5页面通常是通过一问一答的形式，<strong>主动权在客户端</strong>，比方说浏览器发一个请求给服务端，服务端响应一条数据，比方说游戏中的状态机模型，如果HTTP来做，就是客户端请求，<strong>我要进入XX状态</strong>，OK，服务端马上进入下一个状态。</li>
 <li>但是在游戏项目开发的过程中，不可能让客户端去控制游戏的进程，多名玩家，同时请求，接受谁的请求呢？多名玩家不请求，游戏难道就暂停了吗？所以肯定是<strong>服务端去控制游戏状态的流转</strong>。</li>
 </ul>
-<p>所以需要设计一个延迟消息的功能，比方说用户有60s的发言时间，那当你在推送客户端发出可以开始发言的信号之后，<strong>服务端需要去维持一个60s的定时器</strong>，60s后去推送消息给客户端，告知其不能再发言了。</p>
-<h3 id="RocketMQ的延迟消息"><a href="#RocketMQ的延迟消息" class="headerlink" title="RocketMQ的延迟消息"></a>RocketMQ的延迟消息</h3><p>看过一些RMQ的源码，RMQ的延迟消息，主要是通过在broker上做了<strong>几个时间维度的延迟队列</strong>来实现的，他支持几种固定时间的如60s，30s，1s等，当消息到达可以消费的点的时候，<strong>broker会把延迟消息丢到真正的消费队列中</strong>，之后consumer过来拉取消费这样。</p>
-<h3 id="RocketMQ延迟消息的几个不足"><a href="#RocketMQ延迟消息的几个不足" class="headerlink" title="RocketMQ延迟消息的几个不足"></a>RocketMQ延迟消息的几个不足</h3><ol>
-<li>只支持规定的延时时间。如果我要一个<strong>延时23.2s</strong>这样，RMQ就<strong>无法实现</strong>。</li>
-<li>不支持消息的<strong>续约</strong>。如游戏中的加时卡道具，就无法满足其需求。</li>
-<li>不支持消息的<strong>取消</strong>，一旦投递到RMQ之后，消息一定会被consumer消费，所以除非你让consumer感知到消息会被取消。否则无法取消。狼人杀游戏中有一个自爆的需求，一旦触发，需要取消当前所有任务，直接进入黑夜。</li>
-<li>不支持消息的<strong>立即消费</strong>。比方说一个人发言60s，他只用了20s，就发言结束了，这个时候应该立即切换到下一个人开始发言，但是RMQ的消息一经投递，就无法修改其消费时间。</li>
-</ol>
-<h3 id="如何设计出满足游戏需求的延迟消息？"><a href="#如何设计出满足游戏需求的延迟消息？" class="headerlink" title="如何设计出满足游戏需求的延迟消息？"></a>如何设计出满足游戏需求的延迟消息？</h3><p>考虑一下延迟消息的应用场景，有一个很显著的特点就是<strong>按照时间有序消费</strong>，虽然可能会出现插队（如立即消费），取消排队（如取消消费）的特殊需求，但是大部分来说都是按照时间有序消费的。</p>
-<p>这种有序性，应当要想到队列，把所有的消息按照时间戳有序排队。利用Redis的Zset数据结构，时间戳设为score。</p>
-<p>对于RMQ的不足的改进：</p>
-<ol>
-<li>可以支持任意的消费时间。</li>
-<li>可以支持消息的续约，只需调用increaseScore方法即可。</li>
-<li>可以支持消息的取消，delete即可。</li>
-<li>可以支持消息的立即消费，只需把时间戳设置成当前时间，或者比当前时间小即可。</li>
-</ol>
-<p><img src="https://s1.ax1x.com/2020/04/16/JFjtKO.png" alt="JFjtKO.png"></p>
-<p>如上图所示，这里的redis中有三条队列，队列中的时间戳升序排列，每次都拿到最小的时间戳，然后取出，判断与当前时间戳的大小即可。如上图，三条队列中的最小值是19:59:59，那么就拿出这个消息，然后与当前的时间作对比，如果小于当前时间，那么就可以消费掉。</p>
-<h3 id="延迟消息的重复消费问题？"><a href="#延迟消息的重复消费问题？" class="headerlink" title="延迟消息的重复消费问题？"></a>延迟消息的重复消费问题？</h3><p>其实延迟消息是一个很常见的生产者与消费者模式的体现。但是我们的消费者在消费的时候，会不会重复消费问题？因为我们的游戏时不能出现重复消费的，因为handler<strong>很难实现幂等</strong>，所以不能出现重复消费，这里实质上是要实现一个<strong>exactly once的语义</strong>。这里得益于redis的<strong>单线程</strong>模型，所以比较容易解决并发问题。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//获取到可以消费的Key</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">removeKey = getTaskListWillRun();</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="comment">//调用remove方法，</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">Long removeNum = redisTemplate.opsForZSet().remove(RedisKeyCost.RUNNER_QUEUE_KEY, removeKey);</span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="comment">//这里如果removeNum不为0，才说明抢到了该条消息，否则就不消费</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (!<span class="number">0</span>.equals(removeNum))&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">   delayTaskExecutor.execute(<span class="keyword">new</span> Worker(removeKey, execTS));</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<h3 id="Boss线程的轮询时间间隔设置？"><a href="#Boss线程的轮询时间间隔设置？" class="headerlink" title="Boss线程的轮询时间间隔设置？"></a>Boss线程的轮询时间间隔设置？</h3><p>这里模仿了一种常用的Reactor设计模式。Boss线程相当于Reactor，当检测到一个新的事件，将其发送给相应的Handler（Worker线程）去处理。</p>
-<p>但是Boss线程的轮询时间间隔如何设置？<strong>是写死一个固定的，如0.5s</strong>？这样你的消息的默认<strong>消费延迟</strong>就是0.5s。那如果想要更精准，是不是可以把这个时间降低，但是这样，对redis的压力就会增大，因为一般消费者现在可能只有十几台。但后续拓展起来，可能会把redis击垮。</p>
-<p>所以这里引入一个<strong>动态轮询时间</strong>的设置。</p>
-<p><img src="https://s1.ax1x.com/2020/04/16/JFjUqe.png" alt="JFjUqe.png"></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//nextTime的几种情况</span></span></pre></td></tr><tr><td class="code"><pre><span class="line"><span class="keyword">switch</span>(nowTime) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">  <span class="keyword">case</span> <span class="number">19</span>:<span class="number">58</span>:<span class="number">58</span>:<span class="comment">//这个时候下一次访问的时机应该是19:59:59</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">  <span class="keyword">case</span> <span class="number">19</span>:<span class="number">59</span>:<span class="number">59</span>:<span class="comment">//这个时候应该取出19:59:59并且没下一次访问的时机是20:00:00（第二名）</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<p>当然上面是最普通的两种情况。</p>
-<p><strong>特殊</strong>case：</p>
-<p>当前时间是13:00:00，下一次访问时间得到的是19:59:59，但是插入了一条新的记录是16:59:59。这个时候我们应该要把我们的下一次访问时间从19:59:59变成16:59:59。伪代码</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (newTime &lt; nextTime)&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">  <span class="comment">//如果当前时间小于下一次访问的时间，就更新下一次访问的时机</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">  nextTime = newTime;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<p>这是一个典型的<strong>CAS</strong>操作。所以这里肯定会有<strong>并发问题</strong>，因为Java给我们安排了一个很好的unsafe包工具类，就是<strong>原子类</strong>。可以实现CAS的语义。</p>
-<p>但是通常的CAS语义是，把一个值A替换成B。我们这里的是如果一个值A小于B，就把他替换成B。这里用了一个Function的命令。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">tryUpdate</span><span class="params">(<span class="keyword">long</span> newTime)</span> </span>&#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">  LongUnaryOperator updateFunction = (a) -&gt; &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">if</span> (newTime &lt; nextTime.get()) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">      <span class="keyword">return</span> newTime;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">return</span> nextTime.get();</span></pre></td></tr><tr><td class="code"><pre><span class="line">  &#125;;</span></pre></td></tr><tr><td class="code"><pre><span class="line">  <span class="keyword">long</span> next = nextTime.updateAndGet(updateFunction);</span></pre></td></tr><tr><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="code"><pre><span class="line">  <span class="comment">//如果最终更新的不是  newTime说明已经被其他线程更新为更小的数了;</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">  <span class="keyword">if</span> (next == newTime) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="comment">//这里为什么要用synchronized代码块，是因为我们的boss线程在等待的时候，使用的是wait方法，wait方法一定会在synchronized代码块中的，所以我们需要唤醒boss线程，让他获取最新的nextTime</span></span></pre></td></tr><tr><td class="code"><pre><span class="line">    <span class="keyword">synchronized</span> (LockUtil.delayQueueLock) &#123;</span></pre></td></tr><tr><td class="code"><pre><span class="line">      LockUtil.delayQueueLock.notifyAll();</span></pre></td></tr><tr><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">  &#125;</span></pre></td></tr><tr><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<h3 id="宕机怎么办？"><a href="#宕机怎么办？" class="headerlink" title="宕机怎么办？"></a>宕机怎么办？</h3><p>其实到上面的设计已经比较完美了，但是还差一点，比方说现在有三台机器，A（18:00），B（18:00），C（18:00）。现在的时间是17：00，<strong>三台机器获取到的下一次访问redis的时间都是18:00</strong>，然后这个时候A机器来一个<strong>17:30</strong>的任务，但是BC，<strong>还在wait</strong>，他们是<strong>无法感知</strong>到redis来了更新的任务，<strong>只有A知道</strong>，所以这个时候，如果A挂了，那么这个17:30的任务，要等到18:00BC被唤醒之后才会执行。</p>
-<p>解决这个，有几种方案，第一种治本的，就是让消费者间<strong>互相感知</strong>到对方的变化，这个成本很高。</p>
-<p>土办法，设置最长等待时间，其实设置这么多动态轮询时间，主要还是减少消费者的空轮询对Redis的压力，但是像上面这种极端情况，每次的访问时间间隔达到了几十分钟，其实对Redis的压力几乎是没有了。这个时候我们可以设置一个最长等待时间，如0.5s（如果等待时间超过0.5s也设置成0.5s），Redis可以承受几万的qps，所以0.5s访问一次并不大。</p>
-<p>如果nextTime大于0.5s，那么就等0.5s。<strong>这样即使出现宕机，消费的延迟时间还只有0.5s。</strong></p>
-<h3 id="延迟消息的结构体设计"><a href="#延迟消息的结构体设计" class="headerlink" title="延迟消息的结构体设计"></a>延迟消息的结构体设计</h3><p>首先消息结构体需要有哪些必备的东西？这个其实跟设计表结构差不多。</p>
-<ol>
-<li>id，这个是方便我们确定一条唯一的消息。首先要明确一点，这个id不能用分布式id生成器或者自增的id生成器。因为我们还需要能找到这条消息，对消息进行延时或者立即消费。所以我采用了<strong>“roomId-gameId-topicName-identifier”</strong>的形式。通过roomId和gameId可以确定一局游戏，在游戏的进程过程中，狼人杀游戏的状态机流转模型的特点是：同一时刻，只会有一条消息在消费。所以只需要一个topicName就可以。但是有时候会出现同时又多少条消息，这个时候就可以用上一个identifier也就是特殊的消息标识符来区分。</li>
-<li>body。<strong>消息体</strong>，这个就是我们的上文需要给下文传达的一个消息，是上下文提前约定好的东西。比方说，我上文杀了一个人，需要传给下文操作。消费者在消费时就读取这个body，然后作相应的操作。这里也可以自定义一些model，用json的形式存进去。</li>
-<li>preStep。<strong>游戏的上一步</strong>。因为状态机流转模型中，会有多分支汇总的情况出现。例如：女巫毒药结果展示的上一步可能是狼人杀人（女巫没毒药的情况），也有可能是女巫使用毒药。如果使用毒药，就展示毒药使用对象，如果没有毒药，就展示一个毒药使用完毕。通过preStep就做一个区分。</li>
-<li>ttr。消息的<strong>执行超时时间</strong>。如果消费者拿到任务的时候已经超时了，就丢弃任务。</li>
-</ol>
-<h3 id="高可用和拓展性考虑"><a href="#高可用和拓展性考虑" class="headerlink" title="高可用和拓展性考虑"></a>高可用和拓展性考虑</h3><p>首先是高可用，因为这个队列是完全基于Redis的，所以可以用Redis那一套高可用机制来保证，如主从，哨兵。只要保证Redis不挂，消费者的横向拓展能力很强。</p>
-<p>第二个拓展性，比方说用户量级扩大10倍，你的延迟消息，是否支持横向拓展。</p>
-<p>首先要想想，当用户量级上来之后，系统的瓶颈在哪里。当用户变多了，会直接导致消息变多。因为是消费者是批量获取消息，也就是说，当时间到了之后，是把可以消费的消息，整一批都拿下来。然后丢给worker消费，这个时候的瓶颈应该是消费者的消费能力，因为这种批量拉取，可能会破坏负载均衡。可能一批消息集中时间到期，导致某个消费者一下子消费了几百条消息导致宕机。</p>
-<p>这个时候还是借鉴一波RocketMQ的思想，把队列数目增加，消费者指定队列拉取消费。</p>
-<h5 id="队列按照什么维度划分？"><a href="#队列按照什么维度划分？" class="headerlink" title="队列按照什么维度划分？"></a>队列按照什么维度划分？</h5><p>有两种方案：</p>
-<p>第一种按照topicName划分，一类的消息全都归到一个队列。</p>
-<p>第二种无差别hash划分，hash取模到某条队列，无差别化消费。</p>
-<p>第一种肯定是最好的。因为这是一种粒度更小的划分，一条队列中只有一类消息。粒度更小，往往意味着横向拓展时更加的简单。类似于微服务的思想，系统的拆分是的每一个服务的粒度更小，比方说原来订单服务和评价服务在一个系统中，横向拓展10台机器，那么评价服务也被拓展了10倍，但其实是并不需要的，所以把订单服务和评价服务拆开。针对需要的服务拓展。</p>
-<p>但是好的方案肯定是实现困难的，这种方案如果要奏效，首先得把消费者服务拆分，否则没有意义。因为现在游戏项目只是一个单体的，所以暂时不需要这种队列。</p>
-<h5 id="队列是否支持扩容？"><a href="#队列是否支持扩容？" class="headerlink" title="队列是否支持扩容？"></a>队列是否支持扩容？</h5><p>队列一个很重要的点，就是数量，队列数量要选多少呢？目前队列的hash采用的是hashmap中的hash方法，所以一定要是2的n次方才行。</p>
-<p>队列的扩容比较麻烦，主要是扩容后，元素的迁移很麻烦，得加锁，迁移完毕，队列才能重新开放。目前不支持。</p>
-
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/04/16/%E7%8B%BC%E4%BA%BA%E6%9D%80%E6%B8%B8%E6%88%8F%E9%A1%B9%E7%9B%AE%E4%B8%AD%E6%89%80%E8%BF%90%E7%94%A8%E7%9A%84%E5%BB%B6%E8%BF%9F%E6%B6%88%E6%81%AF/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>

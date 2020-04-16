@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https:&#x2F;&#x2F;s1.ax1x.com&#x2F;2020&#x2F;04&#x2F;16&#x2F;JFjtKO.png">
 <meta property="og:image" content="https:&#x2F;&#x2F;s1.ax1x.com&#x2F;2020&#x2F;04&#x2F;16&#x2F;JFjUqe.png">
-<meta property="og:updated_time" content="2020-04-16T04:57:42.460Z">
+<meta property="og:updated_time" content="2020-04-16T13:27:27.758Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;s1.ax1x.com&#x2F;2020&#x2F;04&#x2F;16&#x2F;JFjtKO.png">
 
@@ -373,6 +373,8 @@
 <li>H5页面通常是通过一问一答的形式，<strong>主动权在客户端</strong>，比方说浏览器发一个请求给服务端，服务端响应一条数据，比方说游戏中的状态机模型，如果HTTP来做，就是客户端请求，<strong>我要进入XX状态</strong>，OK，服务端马上进入下一个状态。</li>
 <li>但是在游戏项目开发的过程中，不可能让客户端去控制游戏的进程，多名玩家，同时请求，接受谁的请求呢？多名玩家不请求，游戏难道就暂停了吗？所以肯定是<strong>服务端去控制游戏状态的流转</strong>。</li>
 </ul>
+<a id="more"></a>
+
 <p>所以需要设计一个延迟消息的功能，比方说用户有60s的发言时间，那当你在推送客户端发出可以开始发言的信号之后，<strong>服务端需要去维持一个60s的定时器</strong>，60s后去推送消息给客户端，告知其不能再发言了。</p>
 <h3 id="RocketMQ的延迟消息"><a href="#RocketMQ的延迟消息" class="headerlink" title="RocketMQ的延迟消息"></a>RocketMQ的延迟消息</h3><p>看过一些RMQ的源码，RMQ的延迟消息，主要是通过在broker上做了<strong>几个时间维度的延迟队列</strong>来实现的，他支持几种固定时间的如60s，30s，1s等，当消息到达可以消费的点的时候，<strong>broker会把延迟消息丢到真正的消费队列中</strong>，之后consumer过来拉取消费这样。</p>
 <h3 id="RocketMQ延迟消息的几个不足"><a href="#RocketMQ延迟消息的几个不足" class="headerlink" title="RocketMQ延迟消息的几个不足"></a>RocketMQ延迟消息的几个不足</h3><ol>
