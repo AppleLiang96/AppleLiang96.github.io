@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https:&#x2F;&#x2F;s1.ax1x.com&#x2F;2020&#x2F;04&#x2F;16&#x2F;JFjtKO.png">
 <meta property="og:image" content="https:&#x2F;&#x2F;s1.ax1x.com&#x2F;2020&#x2F;04&#x2F;16&#x2F;JFjUqe.png">
-<meta property="og:updated_time" content="2020-04-16T13:27:27.758Z">
+<meta property="og:updated_time" content="2020-04-22T08:12:57.263Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;s1.ax1x.com&#x2F;2020&#x2F;04&#x2F;16&#x2F;JFjtKO.png">
 
@@ -434,6 +434,7 @@
 <p>但是好的方案肯定是实现困难的，这种方案如果要奏效，首先得把消费者服务拆分，否则没有意义。因为现在游戏项目只是一个单体的，所以暂时不需要这种队列。</p>
 <h5 id="队列是否支持扩容？"><a href="#队列是否支持扩容？" class="headerlink" title="队列是否支持扩容？"></a>队列是否支持扩容？</h5><p>队列一个很重要的点，就是数量，队列数量要选多少呢？目前队列的hash采用的是hashmap中的hash方法，所以一定要是2的n次方才行。</p>
 <p>队列的扩容比较麻烦，主要是扩容后，元素的迁移很麻烦，得加锁，迁移完毕，队列才能重新开放。目前不支持。</p>
+<p>0 -&gt; 1 执行 NPE -&gt;  2</p>
 
       
     </div>
@@ -477,6 +478,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/04/23/%E7%8B%BC%E4%BA%BA%E6%9D%80%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E5%9B%BE/" rel="prev" title="狼人杀项目架构图">
+                狼人杀项目架构图 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -560,7 +565,7 @@
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-count">31</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
